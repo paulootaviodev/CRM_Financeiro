@@ -21,9 +21,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('landing_page.urls')),
     # path('blog/', include('blog.urls')),
     # path('crm-financeiro/', include('crm_financeiro.urls')),
-    # path('landing_page/', include('landing_page.urls')),
 ]
 
 if settings.DEBUG:

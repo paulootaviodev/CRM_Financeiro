@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>Simulação de Crédito</title>
+
+    <!-- Code -->
+     <script src="{% static 'assets/js/credit_simulation_request.js' %}" type="text/javascript" defer></script>
+</head>
+
+<body>
+    <main class="main">
+        <div class="container">
+            <div class="title">
+                <h2>Simulação de Crédito</h2>
+            </div>
+
+            <div class="form-container">
+                <form action="#" method="post" id="credit-simulation-form" autocomplete="off">
+                    {% csrf_token %}
+
+                    <div class="form-field-container">
+                        {{ form.full_name }}
+                        <span class="error-message" id="full_name-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.cpf }}
+                        <span class="error-message" id="cpf-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.city }}
+                        <span class="error-message" id="city-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.state }}
+                        <span class="error-message" id="state-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.marital_status }}
+                        <span class="error-message" id="marital_status-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        <label>{{ form.birth_date.label }}</label>
+                        {{ form.birth_date }}
+                        <span class="error-message" id="birth_date-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.employment_status }}
+                        <span class="error-message" id="employment_status-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.phone }}
+                        <span class="error-message" id="phone-error"></span>
+                    </div>
+
+                    <div class="form-field-container">
+                        {{ form.email }}
+                        <span class="error-message" id="email-error"></span>
+                    </div>
+
+                    <div class="form-field-container checkbox">
+                        {{ form.privacy_policy }}
+                        <label for="privacy-policy">Ao clicar em “Simular Crédito” você está de acordo com a
+                            <a href="#" target="_blank">Política de Privacidade e Uso de Dados</a>.</label>
+                        <span class="error-message" id="privacy_policy-error"></span>
+                    </div>
+
+                    <div class="cf-turnstile" data-sitekey="{{ turnstile_sitekey }}" data-callback="javascriptCallback"></div>
+
+                    <button type="submit" id="submit-form-btn">Simular Crédito</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

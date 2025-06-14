@@ -11,13 +11,18 @@ class CreditSimulationLeadAdmin(admin.ModelAdmin):
         'privacy_policy', 'api_status', 'created_at', 'updated_at'
     )
     list_display_links = ('id', 'full_name', 'cpf', 'phone', 'email')
-    search_fields = ('full_name', 'cpf', 'city', 'phone', 'email')
+    search_fields = ('city',)
     list_filter = (
         'state', 'marital_status', 'birth_date', 'employment_status', 'released_value',
         'number_of_installments', 'value_of_installments', 'privacy_policy',
         'api_status', 'created_at'
     )
     ordering = ('-created_at',)
+    readonly_fields = (
+        'id', 'full_name', 'cpf', 'city', 'state', 'marital_status', 'birth_date', 'employment_status',
+        'phone', 'email', 'released_value', 'number_of_installments', 'value_of_installments',
+        'privacy_policy', 'api_status', 'created_at', 'updated_at'
+    )
 
     def has_add_permission(self, request):
         return False
@@ -31,23 +36,14 @@ class CreditSimulationLeadAdmin(admin.ModelAdmin):
 
         if search_term:
             decrypted_matches = CreditSimulationLead.objects.none()
-            batch_size = 128
-            total_records = CreditSimulationLead.objects.count()
 
-            for batch_start in range(0, total_records, batch_size):
-                batch = CreditSimulationLead.objects.all()[batch_start:batch_start + batch_size]
-                for obj in batch:
-                    try:
-                        if search_term.lower() in obj.full_name.lower():
-                            decrypted_matches |= CreditSimulationLead.objects.filter(pk=obj.pk)
-                        elif search_term.lower() in obj.cpf().lower():
-                            decrypted_matches |= CreditSimulationLead.objects.filter(pk=obj.pk)
-                        elif search_term.lower() in obj.phone().lower():
-                            decrypted_matches |= CreditSimulationLead.objects.filter(pk=obj.pk)
-                        elif search_term.lower() in obj.email().lower():
-                            decrypted_matches |= CreditSimulationLead.objects.filter(pk=obj.pk)
-                    except Exception:
-                        continue  # Ignore decryption errors for invalid records
+            for obj in CreditSimulationLead.objects.iterator(chunk_size=128):
+                try:
+                    fields = [obj.full_name, obj.cpf, obj.phone, obj.email]
+                    if any(search_term.lower() in field.lower() for field in fields):
+                        decrypted_matches |= CreditSimulationLead.objects.filter(pk=obj.pk)
+                except Exception:
+                    continue  # Ignore decryption errors for invalid records
 
             # Combines normal and decrypted search results
             queryset |= decrypted_matches
@@ -68,31 +64,26 @@ class CreditSimulationLeadAdmin(admin.ModelAdmin):
             ]
         )  # CSV Headers
 
-        batch_size = 128
-        total_records = queryset.count()
-
-        for batch_start in range(0, total_records, batch_size):
-            batch = queryset[batch_start:batch_start + batch_size]
-            for simulation in batch:
-                writer.writerow([
-                    simulation.id,
-                    simulation.full_name,
-                    simulation.cpf,
-                    simulation.city,
-                    simulation.state,
-                    simulation.marital_status,
-                    simulation.birth_date,
-                    simulation.employment_status,
-                    simulation.phone,
-                    simulation.email,
-                    simulation.released_value,
-                    simulation.number_of_installments,
-                    simulation.value_of_installments,
-                    simulation.privacy_policy,
-                    simulation.api_status,
-                    simulation.created_at,
-                    simulation.updated_at,
-                ])
+        for simulation in queryset.iterator(chunk_size=128):
+            writer.writerow([
+                simulation.id,
+                simulation.full_name,
+                simulation.cpf,
+                simulation.city,
+                simulation.get_state_display(),
+                simulation.get_marital_status_display(),
+                simulation.birth_date,
+                simulation.get_employment_status_display(),
+                simulation.phone,
+                simulation.email,
+                simulation.released_value,
+                simulation.number_of_installments,
+                simulation.value_of_installments,
+                simulation.privacy_policy,
+                simulation.api_status,
+                simulation.created_at,
+                simulation.updated_at,
+            ])
 
         return response
 

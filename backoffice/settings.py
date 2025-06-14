@@ -179,8 +179,8 @@ MESSAGE_TAGS = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 # Cloudflare Turnstile
-# CLOUDFLARE_TURNSTILE_SITE_KEY = getenv('TURNSTILE_SITE')
-# CLOUDFLARE_TURNSTILE_SECRET_KEY = getenv('TURNSTILE_KEY')
+CLOUDFLARE_TURNSTILE_SITE_KEY = getenv('TURNSTILE_SITE')
+CLOUDFLARE_TURNSTILE_SECRET_KEY = getenv('TURNSTILE_KEY')
 
 # Cookie expiration time in seconds
 SESSION_COOKIE_AGE = 28800  # 8 horas (28800 seconds)
