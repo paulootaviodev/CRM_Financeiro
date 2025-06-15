@@ -1,0 +1,234 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Landing Page - CRM Financeiro</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/landing_page/img/favicon.ico' %}" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" type="text/css" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'assets/landing_page/css/styles.css' %}" rel="stylesheet" />
+        <!-- Code -->
+        <script src="{% static 'assets/landing_page/js/credit_simulation_request.js' %}" type="text/javascript" defer></script>
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-light bg-light static-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">CRM Financeiro</a>
+                <a class="btn btn-primary" href="#">Blog</a>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead" style="background-image: url({% static 'assets/landing_page/img/pexels-atbo-66986-245240.jpg' %}); background-size: cover; background-position: center; background-repeat: no-repeat;">
+            <div class="container position-relative">
+                <div class="row justify-content-center">
+                    <div class="col-xl-6">
+                        <div class="text-center text-white">
+                            <!-- Page heading-->
+                            <h1 class="mb-5">Faça já a sua simulação de crédito!</h1>
+                            <div class="container">
+                                <div class="form-container">
+                                    <form action="#" method="post" id="credit-simulation-form" class="p-4 border rounded" autocomplete="off" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3);">
+                                        {% csrf_token %}
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.full_name.name }}" class="form-label w-100" style="text-align: left;">{{ form.full_name.label }}</label>
+                                            {{ form.full_name }}
+                                            <span class="error-message" id="full_name-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.cpf.name }}" class="form-label w-100" style="text-align: left;">{{ form.cpf.label }}</label>
+                                            {{ form.cpf }}
+                                            <span class="error-message" id="cpf-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.city.name }}" class="form-label w-100" style="text-align: left;">{{ form.city.label }}</label>
+                                            {{ form.city }}
+                                            <span class="error-message" id="city-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.state.name }}" class="form-label w-100" style="text-align: left;">{{ form.state.label }}</label>
+                                            {{ form.state }}
+                                            <span class="error-message" id="state-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.marital_status.name }}" class="form-label w-100" style="text-align: left;">{{ form.marital_status.label }}</label>
+                                            {{ form.marital_status }}
+                                            <span class="error-message" id="marital_status-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.birth_date.name }}" class="form-label w-100" style="text-align: left;">{{ form.birth_date.label }}</label>
+                                            {{ form.birth_date }}
+                                            <span class="error-message" id="birth_date-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.employment_status.name }}" class="form-label w-100" style="text-align: left;">{{ form.employment_status.label }}</label>
+                                            {{ form.employment_status }}
+                                            <span class="error-message" id="employment_status-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.phone.name }}" class="form-label w-100" style="text-align: left;">{{ form.phone.label }}</label>
+                                            {{ form.phone }}
+                                            <span class="error-message" id="phone-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container mb-3">
+                                            <label for="{{ form.email.name }}" class="form-label w-100" style="text-align: left;">{{ form.email.label }}</label>
+                                            {{ form.email }}
+                                            <span class="error-message" id="email-error"></span>
+                                        </div>
+
+                                        <div class="form-field-container form-check">
+                                            {{ form.privacy_policy }}
+                                            <label for="privacy-policy" class="form-check-label">Ao clicar em “Simular Crédito” você está de acordo com a
+                                                <a href="#" target="_blank" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Política de Privacidade e Uso de Dados</a>.</label>
+                                            <span class="error-message" id="privacy_policy-error"></span>
+                                        </div>
+
+                                        <div class="cf-turnstile" data-sitekey="{{ turnstile_sitekey }}" data-callback="javascriptCallback"></div>
+
+                                        <button type="submit" id="submit-form-btn" class="btn btn-light mt-3">Simular Crédito</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Icons Grid-->
+        <section class="features-icons bg-light text-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                            <div class="features-icons-icon d-flex"><i class="bi bi-ui-checks m-auto text-primary"></i></div>
+                            <h3>Faça a sua simulação</h3>
+                            <p class="lead mb-0">Saiba na hora o seu valor de crédito aprovado!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                            <div class="features-icons-icon d-flex"><i class="bi bi-phone m-auto text-primary"></i></div>
+                            <h3>Solicite o empréstimo</h3>
+                            <p class="lead mb-0">Atendimento humanizado e pronto para te atender!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+                            <div class="features-icons-icon d-flex"><i class="bi bi-wallet m-auto text-primary"></i></div>
+                            <h3>Dinheiro na conta</h3>
+                            <p class="lead mb-0">O dinheiro cai na hora na sua conta!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Image Showcases-->
+        <section class="showcase">
+            <div class="container-fluid p-0">
+                <div class="row g-0">
+                    <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url({% static 'assets/landing_page/img/pexels-scottwebb-136413.jpg' %})"></div>
+                    <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                        <h2>Venha crescer conosco</h2>
+                        <p class="lead mb-0">Somos a instituição financeira que mais cresceu no Brasil nos últimos 5 anos!</p>
+                    </div>
+                </div>
+                <div class="row g-0">
+                    <div class="col-lg-6 text-white showcase-img" style="background-image: url({% static 'assets/landing_page/img/pexels-sora-shimazaki-5668859.jpg' %})"></div>
+                    <div class="col-lg-6 my-auto showcase-text">
+                        <h2>Qualidade e confiança</h2>
+                        <p class="lead mb-0">Milhões de clientes confiam no CRM Financeiro para alavancar os seus negócios e ideias!</p>
+                    </div>
+                </div>
+                <div class="row g-0">
+                    <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url({% static 'assets/landing_page/img/pexels-pixabay-60504.jpg' %})"></div>
+                    <div class="col-lg-6 order-lg-1 my-auto showcase-text">
+                        <h2>Segurança de ponta</h2>
+                        <p class="lead mb-0">Usamos criptografia de ponta para garantir a segurança dos seus dados e da sua empresa!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Testimonials-->
+        <section class="testimonials text-center bg-light">
+            <div class="container">
+                <h2 class="mb-5">O que as pessoas estão dizendo...</h2>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+                            <img class="img-fluid rounded-circle mb-3" src="{% static 'assets/landing_page/img/testimonials-1.jpg' %}" alt="..." />
+                            <h5>Margaret E.</h5>
+                            <p class="font-weight-light mb-0">"Isso é fantástico! Muito obrigada, pessoal!"</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+                            <img class="img-fluid rounded-circle mb-3" src="{% static 'assets/landing_page/img/testimonials-2.jpg' %}" alt="..." />
+                            <h5>Fred S.</h5>
+                            <p class="font-weight-light mb-0">"O CRM Financeiro é incrível. Tenho usado ele para alavancar a minha empresa."</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+                            <img class="img-fluid rounded-circle mb-3" src="{% static 'assets/landing_page/img/testimonials-3.jpg' %}" alt="..." />
+                            <h5>Sarah W.</h5>
+                            <p class="font-weight-light mb-0">"Muito obrigada por desenvolver um sistema tão robusto e confiável!"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+                        <ul class="list-inline mb-2">
+                            <li class="list-inline-item"><a href="#">Sobre</a></li>
+                            <li class="list-inline-item">⋅</li>
+                            <li class="list-inline-item"><a href="#">Contato</a></li>
+                            <li class="list-inline-item">⋅</li>
+                            <li class="list-inline-item"><a href="#">Termos de Uso</a></li>
+                            <li class="list-inline-item">⋅</li>
+                            <li class="list-inline-item"><a href="#">Política de Privacidade e Uso de Dados</a></li>
+                        </ul>
+                        <p class="text-muted small mb-4 mb-lg-0">&copy; CRM Financeiro 2025. Todos os direitos reservados.</p>
+                    </div>
+                    <div class="col-lg-6 h-100 text-center text-lg-end my-auto">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item me-4">
+                                <a href="#"><i class="bi-facebook fs-3"></i></a>
+                            </li>
+                            <li class="list-inline-item me-4">
+                                <a href="#"><i class="bi-twitter fs-3"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#"><i class="bi-instagram fs-3"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>

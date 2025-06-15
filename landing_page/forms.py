@@ -32,6 +32,7 @@ def validate_email_format(email):
 class CreditSimulationForm(forms.Form):
     full_name = forms.CharField(max_length=255, label="Nome completo:", widget=forms.TextInput(attrs={
             'id': 'full_name',
+            'class': 'form-control',
             'placeholder': 'Seu nome completo...',
             'required': True
         })
@@ -39,6 +40,7 @@ class CreditSimulationForm(forms.Form):
 
     cpf = forms.CharField(max_length=14, label="CPF:", widget=forms.TextInput(attrs={
             'id': 'cpf',
+            'class': 'form-control',
             'placeholder': 'xxx.xxx.xxx-xx',
             'required': True
         })
@@ -46,6 +48,7 @@ class CreditSimulationForm(forms.Form):
 
     city = forms.CharField(max_length=128, label="Cidade:", widget=forms.TextInput(attrs={
             'id': 'city',
+            'class': 'form-control',
             'placeholder': 'A cidade onde você mora...',
             'required': True
         })
@@ -56,6 +59,7 @@ class CreditSimulationForm(forms.Form):
         label="Estado:",
         widget=forms.Select(attrs={
             'id': 'state',
+            'class': 'form-control',
             'required': True
         })
     )
@@ -65,12 +69,14 @@ class CreditSimulationForm(forms.Form):
         label="Estado civil:",
         widget=forms.Select(attrs={
             'id': 'marital_status',
+            'class': 'form-control',
             'required': True
         })
     )
 
     birth_date = forms.DateField(label="Data de Nascimento:", widget=forms.DateInput(attrs={
             'id': 'birth_date',
+            'class': 'form-control',
             'type': 'date',
             'required': True,
         })
@@ -81,12 +87,14 @@ class CreditSimulationForm(forms.Form):
         label="Situação Empregatícia:",
         widget=forms.Select(attrs={
             'id': 'employment_status',
+            'class': 'form-control',
             'required': True
         })
     )
 
     phone = forms.CharField(max_length=14, label="Telefone:", widget=forms.TextInput(attrs={
             'id': 'phone',
+            'class': 'form-control',
             'placeholder': '(xx)xxxxx-xxxx',
             'required': True
         })
@@ -94,6 +102,7 @@ class CreditSimulationForm(forms.Form):
 
     email = forms.EmailField(max_length=128, label="E-mail:", widget=forms.EmailInput(attrs={
             'id': 'email',
+            'class': 'form-control',
             'placeholder': 'Seu e-mail...',
             'required': True
         })
@@ -104,6 +113,7 @@ class CreditSimulationForm(forms.Form):
         label="",
         widget=forms.CheckboxInput(attrs={
             'id': 'privacy-policy',
+            'class': 'form-check-input',
             'required': True,
             'checked': False
         })

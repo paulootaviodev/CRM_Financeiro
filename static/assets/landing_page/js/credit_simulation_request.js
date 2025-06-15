@@ -15,7 +15,7 @@
                <p class="response-text-2">${released_value}</p>`
             : `<p class="response-text-1">Mas não desanime, você pode tentar novamente em outro momento!</p>`;
         responseDiv.innerHTML = `
-            <div class="response">
+            <div class="response p-4 border rounded" class="p-4 border rounded" autocomplete="off" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3);>
                 <h3>${heading}</h3>
                 ${content}
             </div>`;
@@ -26,7 +26,7 @@
         const content = `<p class="response-text-1">Parece que houve um erro em nossos sistemas.
                         Tente novamente em outro momento.</p>`;
         responseDiv.innerHTML = `
-            <div class="response">
+            <div class="response p-4 border rounded" class="p-4 border rounded" autocomplete="off" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3);>
                 <h3>${heading}</h3>
                 ${content}
             </div>`;
