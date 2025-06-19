@@ -92,7 +92,7 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    phone = forms.CharField(max_length=14, label="Telefone:", widget=forms.TextInput(attrs={
+    phone = forms.CharField(max_length=15, label="Telefone:", widget=forms.TextInput(attrs={
             'id': 'phone',
             'class': 'form-control',
             'placeholder': '(xx)xxxxx-xxxx',
