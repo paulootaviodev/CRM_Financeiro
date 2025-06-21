@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'blog',
     'crm_financeiro',
     'landing_page',
+    'django_summernote'
 ]
 
 MIDDLEWARE = [
@@ -174,6 +175,24 @@ EMAIL_HOST_PASSWORD = getenv('SMTP_PASSWORD')
 MESSAGE_TAGS = {
     message_constants.ERROR: 'danger',
 }
+
+SUMMERNOTE_CONFIG = {
+    'iframe': True,
+    'summernote': {
+        'toolbar': [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+        ],
+    },
+}
+
+SUMMERNOTE_THEME = 'bs4'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
