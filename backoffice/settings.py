@@ -156,9 +156,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # AUTH_USER_MODEL = ''
 
-# LOGIN_REDIRECT_URL = 'home'
-# LOGIN_URL = 'login'
-# LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = getenv('SMTP_HOST')
@@ -167,10 +167,9 @@ EMAIL_USE_TLS = getenv('SMTP_TLS')
 EMAIL_HOST_USER = getenv('SMTP_EMAIL')
 EMAIL_HOST_PASSWORD = getenv('SMTP_PASSWORD')
 
-# AUTHENTICATION_BACKENDS = [
-#     'app.backends.EmailVerificationBackend',
-#     'django.contrib.auth.backends.ModelBackend',
-# ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 MESSAGE_TAGS = {
     message_constants.ERROR: 'danger',

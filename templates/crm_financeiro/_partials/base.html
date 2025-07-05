@@ -192,7 +192,10 @@
                 <div class="modal-body">Clique em "sair" caso realmente deseje sair.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" href="#">Sair</a>
+                    <form action="{% url 'logout' %}" method="post" data-toggle="modal" data-target="#logoutModal">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Sair</button>
+                    </form>
                 </div>
             </div>
         </div>
