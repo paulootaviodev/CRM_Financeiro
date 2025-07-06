@@ -1,6 +1,6 @@
 from django import forms
-from .models import Client
 from django.contrib.auth.forms import AuthenticationForm
+from landing_page.forms import CreditSimulationForm
 
 
 class CustomLoginForm(AuthenticationForm):
@@ -30,7 +30,7 @@ class CustomLoginForm(AuthenticationForm):
     )
 
 
-class ClientForm(forms.ModelForm):
-    class Meta:
-        model = Client
-        fields = ['is_active']
+class ClientForm(CreditSimulationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['state'].widget.attrs.update({'class': 'form-control'})

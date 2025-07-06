@@ -8,19 +8,17 @@ import csv
 class ClientAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'full_name', 'cpf', 'city', 'state', 'marital_status', 'birth_date', 'employment_status',
-        'phone', 'email', 'client_since', 'updated', 'is_active'
+        'phone', 'email', 'client_since', 'updated_at', 'is_active'
     )
     list_display_links = ('id', 'full_name', 'cpf', 'phone', 'email')
     search_fields = ('city',)
     list_filter = (
-        'state', 'marital_status', 'birth_date', 'employment_status', 'released_value',
-        'client_since', 'updated', 'is_active'
+        'state', 'marital_status', 'birth_date', 'employment_status',
+        'client_since', 'updated_at', 'is_active'
     )
-    ordering = ('-client_since',)
+    ordering = ('-id',)
     readonly_fields = (
-        'id', 'full_name', 'cpf', 'birth_date', 'released_value', 'number_of_installments',
-        'value_of_installments', 'privacy_policy', 'api_status', 'created_at', 'updated_at',
-        'client_since', 'updated'
+        'id', 'full_name', 'cpf', 'birth_date', 'client_since', 'updated_at',
     )
 
     def has_add_permission(self, request):
@@ -55,9 +53,7 @@ class ClientAdmin(admin.ModelAdmin):
         writer.writerow(
             [
                 'id', 'full_name', 'cpf', 'city', 'state', 'marital_status', 'birth_date', 'employment_status',
-                'phone', 'email', 'released_value', 'number_of_installments', 'value_of_installments',
-                'privacy_policy', 'api_status', 'created_at', 'updated_at', 'client_since', 'updated',
-                'is_active'
+                'phone', 'email', 'privacy_policy', 'updated_at', 'client_since', 'is_active'
             ]
         )  # CSV Headers
 
@@ -73,15 +69,9 @@ class ClientAdmin(admin.ModelAdmin):
                 client.get_employment_status_display(),
                 client.phone,
                 client.email,
-                client.released_value,
-                client.number_of_installments,
-                client.value_of_installments,
                 client.privacy_policy,
-                client.api_status,
-                client.created_at,
                 client.updated_at,
                 client.client_since,
-                client.updated,
                 client.is_active
             ])
 
