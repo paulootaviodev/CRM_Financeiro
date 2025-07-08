@@ -1,7 +1,7 @@
 from django import forms
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from .models import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
+from crm_financeiro.models import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
 import re
 
 def remove_non_numeric(value: str) -> str:

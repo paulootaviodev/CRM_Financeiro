@@ -1,0 +1,99 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+
+{% block register_customer_active %}active{% endblock %}
+
+{% block code %}
+<script src="{% static 'assets/crm_financeiro/js/register_customer_request.js' %}" type="text/javascript" defer></script>
+<script src="{% static 'assets/landing_page/js/phone_input.js' %}" type="text/javascript" defer></script>
+<script src="{% static 'assets/landing_page/js/cpf_input.js' %}" type="text/javascript" defer></script>
+{% endblock %}
+
+{% block content %}
+<div id="content">
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Cadastrar Cliente</h1>
+        </div>
+
+        <!-- Content Row -->
+        <div class="row">
+            <div class="container">
+                <div class="form-container">
+                    <form action="#" method="post" id="register-customer-form" autocomplete="off">
+                        {% csrf_token %}
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.full_name.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.full_name.label }}</label>
+                            {{ client_form.full_name }}
+                            <span class="error-message" id="full_name-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.cpf.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.cpf.label }}</label>
+                            {{ client_form.cpf }}
+                            <span class="error-message" id="cpf-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.city.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.city.label }}</label>
+                            {{ client_form.city }}
+                            <span class="error-message" id="city-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.state.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.state.label }}</label>
+                            {{ client_form.state }}
+                            <span class="error-message" id="state-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.marital_status.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.marital_status.label }}</label>
+                            {{ client_form.marital_status }}
+                            <span class="error-message" id="marital_status-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.birth_date.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.birth_date.label }}</label>
+                            {{ client_form.birth_date }}
+                            <span class="error-message" id="birth_date-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.employment_status.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.employment_status.label }}</label>
+                            {{ client_form.employment_status }}
+                            <span class="error-message" id="employment_status-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.phone.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.phone.label }}</label>
+                            {{ client_form.phone }}
+                            <span class="error-message" id="phone-error"></span>
+                        </div>
+
+                        <div class="form-field-container mb-3">
+                            <label for="{{ client_form.email.name }}" class="form-label w-100" style="text-align: left;">{{ client_form.email.label }}</label>
+                            {{ client_form.email }}
+                            <span class="error-message" id="email-error"></span>
+                        </div>
+
+                        <div class="form-field-container form-check">
+                            {{ client_form.privacy_policy }}
+                            <label for="privacy-policy" class="form-check-label">Ao clicar em “Simular Crédito” você está de acordo com a
+                                <a href="#" target="_blank" class="link-light link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">Política de Privacidade e Uso de Dados</a>.</label>
+                            <span class="error-message" id="privacy_policy-error"></span>
+                        </div>
+
+                        <button type="submit" id="submit-form-btn" class="btn btn-light mt-3">Cadastrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+{% endblock %}
