@@ -1,0 +1,62 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block customer_active %}active{% endblock %}
+
+{% block content %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Clientes</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            {% if clientes|length == 1 %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ clients|length }} cliente</h6>
+            {% else %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ clients|length }} clientes</h6>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome completo</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>E-mail</th>
+                            <th>Cidade</th>
+                            <th>Estado</th>
+                            <th>Estado civil</th>
+                            <th>Data de nascimento</th>
+                            <th>Situação empregatícia</th>
+                            <th>Cliente desde</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr>
+                            <td><a href="{% url 'detail_customer' client.slug %}">{{ client.full_name }}</a></td>
+                            <td>{{ client.cpf|format_cpf }}</td>
+                            <td>{{ client.phone|format_phone }}</td>
+                            <td>{{ client.email }}</td>
+                            <td>{{ client.city }}</td>
+                            <td>{{ client.get_state_display }}</td>
+                            <td>{{ client.get_marital_status_display }}</td>
+                            <td>{{ client.birth_date }}</td>
+                            <td>{{ client.get_employment_status_display }}</td>
+                            <td>{{ client.client_since }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container-fluid -->
+{% endblock %}

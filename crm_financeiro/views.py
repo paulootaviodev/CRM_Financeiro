@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CustomLoginForm, ClientForm
@@ -49,3 +49,18 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
         else:
             errors = form.errors.get_json_data()
             return JsonResponse({"success": False, "errors": errors}, status=400)    
+
+
+class ListCustomers(LoginRequiredMixin, ListView):
+    template_name = "crm_financeiro/list_customers.html"
+    model = Client
+    context_object_name = 'clients'
+    paginate_by = 50
+
+
+class DetailCustomer(LoginRequiredMixin, DetailView):
+    template_name = "crm_financeiro/detail_customer.html"
+    model = Client
+    context_object_name = 'client'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
