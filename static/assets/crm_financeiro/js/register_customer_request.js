@@ -8,9 +8,12 @@
         document.querySelectorAll(".error-message").forEach(el => (el.textContent = ""));
     };
 
-    const renderResponse = (released_value) => {
+    const renderResponse = (redirect_url) => {
         const heading = "Cliente cadastrado com sucesso!";
-        const content = `<p class="response-text-1">Agora você pode gerar propostas para esse cliente.</p>`;
+        const content = `
+            <p class="response-text-1">Agora você pode gerar propostas para esse cliente.</p>
+            <a href="${redirect_url}" class="btn btn-primary">Acessar dados do cliente.</a>
+        `;
         responseDiv.innerHTML = `
             <div class="response p-4 border rounded" autocomplete="off">
                 <h3>${heading}</h3>
@@ -68,7 +71,7 @@
 
             const data = await response.json();
             if (data.success) {
-                renderResponse();
+                renderResponse(data.redirect_url);
             } else {
                 renderErrorResponse();
             }
