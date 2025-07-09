@@ -11,6 +11,49 @@
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Clientes</h1>
 
+    <form method="get" class="row g-3 mb-4">
+        <!-- Barra de pesquisa -->
+        <div class="col-md-12 mb-3">
+            <label for="search" class="form-label" style="text-align: left;">Pesquisa:</label>
+            <input type="text" name="search" class="form-control" placeholder="Pesquisar por nome, CPF, telefone, email, cidade..." value="{{ request.GET.search }}">
+        </div>
+
+        <!-- Filtros individuais -->
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.state.name }}" class="form-label" style="text-align: left;">{{ form.state.label }}</label>
+            {{ form.state }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.marital_status.name }}" class="form-label" style="text-align: left;">{{ form.marital_status.label }}</label>
+            {{ form.marital_status }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.employment_status.name }}" class="form-label" style="text-align: left;">{{ form.employment_status.label }}</label>
+            {{ form.employment_status }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.birth_date_initial.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_initial.label }}</label>
+            {{ form.birth_date_initial }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.birth_date_final.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_final.label }}</label>
+            {{ form.birth_date_final }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.client_since_initial.name }}" class="form-label" style="text-align: left;">{{ form.client_since_initial.label }}</label>
+            {{ form.client_since_initial }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.client_since_final.name }}" class="form-label" style="text-align: left;">{{ form.client_since_final.label }}</label>
+            {{ form.client_since_final }}
+        </div>
+
+        <!-- Botão de filtro -->
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -57,6 +100,26 @@
             </div>
         </div>
     </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% with request.GET.urlencode as querystring %}
+            {% if page_obj.has_previous %}
+                <div class="d-flex justify-content-end mb-4">
+                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">← Página anterior</a>
+                </div>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <div class="d-flex justify-content-end mb-4">
+                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Próxima página →</a>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endif %}
 </div>
 <!-- /.container-fluid -->
 {% endblock %}
