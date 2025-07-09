@@ -1,8 +1,8 @@
 from django.http import JsonResponse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CustomLoginForm, ClientForm
+from .forms import CustomLoginForm, ClientForm, ClientFilterForm
 from .models import Client
 
 
@@ -49,3 +49,77 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
         else:
             errors = form.errors.get_json_data()
             return JsonResponse({"success": False, "errors": errors}, status=400)    
+
+
+class ListCustomers(LoginRequiredMixin, ListView):
+    template_name = "crm_financeiro/list_customers.html"
+    model = Client
+    context_object_name = 'clients'
+    paginate_by = 50
+    ordering = '-id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ClientFilterForm(self.request.GET)
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        params = self.request.GET
+
+        search = params.get('search')
+        state = params.get('state')
+        marital_status = params.get('marital_status')
+        employment_status = params.get('employment_status')
+
+        birth_date_initial = params.get('birth_date_initial')
+        birth_date_final = params.get('birth_date_final')
+        client_since_initial = params.get('client_since_initial')
+        client_since_final = params.get('client_since_final')
+
+        if search:
+            decrypted_matches = Client.objects.none()
+
+            for obj in Client.objects.iterator(chunk_size=128):
+                try:
+                    fields = [obj.full_name, obj.cpf, obj.phone, obj.email, obj.city]
+                    if any(search.lower() in field.lower() for field in fields):
+                        decrypted_matches |= Client.objects.filter(pk=obj.pk)
+                except Exception:
+                    continue  # Ignore decryption errors for invalid records
+
+            # Combines normal and decrypted search results
+            queryset = decrypted_matches
+
+        if state:
+            queryset = queryset.filter(state=state)
+
+        if marital_status:
+            queryset = queryset.filter(marital_status=marital_status)
+
+        if employment_status:
+            queryset = queryset.filter(employment_status=employment_status)
+
+        if birth_date_initial and birth_date_final:
+            queryset = queryset.filter(birth_date__range=[birth_date_initial, birth_date_final])
+        elif birth_date_initial:
+            queryset = queryset.filter(birth_date__gte=birth_date_initial)
+        elif birth_date_final:
+            queryset = queryset.filter(birth_date__lte=birth_date_final)
+
+        if client_since_initial and client_since_final:
+            queryset = queryset.filter(client_since__range=[client_since_initial, client_since_final])
+        elif client_since_initial:
+            queryset = queryset.filter(client_since__gte=client_since_initial)
+        elif client_since_final:
+            queryset = queryset.filter(client_since__lte=client_since_final)
+
+        return queryset
+
+
+class DetailCustomer(LoginRequiredMixin, DetailView):
+    template_name = "crm_financeiro/detail_customer.html"
+    model = Client
+    context_object_name = 'client'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'

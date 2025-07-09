@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from django.utils import timezone
 from cryptography.fernet import Fernet
 from os import getenv
@@ -77,6 +78,7 @@ class EncryptedPerson(models.Model):
 
 class Client(EncryptedPerson):
     cpf_hash = models.CharField(max_length=64, unique=True, editable=False, blank=False, null=False, verbose_name="Hash do CPF")
+    slug = slug = models.SlugField(unique=True, max_length=128, editable=False, blank=True, null=False, verbose_name="Slug")
     is_active = models.BooleanField(default=True, verbose_name="Cliente ativo")
     client_since = models.DateTimeField(auto_now_add=True, verbose_name='Cliente Desde')
 
@@ -86,7 +88,13 @@ class Client(EncryptedPerson):
     def save(self, *args, **kwargs):
         if self.cpf:
             self.cpf_hash = hashlib.sha256(self.cpf.encode()).hexdigest()
+        
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+
+        if is_new and not self.slug:
+            self.slug = slugify(f"{self.cpf_hash}-{self.client_since}")
+            super().save(update_fields=["slug"])
 
     class Meta:
         verbose_name = "Cliente"
