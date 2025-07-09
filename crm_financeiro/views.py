@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.urls import reverse
 from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -45,7 +46,8 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
             client.privacy_policy = form.cleaned_data['privacy_policy']
             client.save()
 
-            return JsonResponse({"success": True}, status=200)
+            detail_url = reverse('detail_customer', kwargs={'slug': client.slug})
+            return JsonResponse({"success": True, "redirect_url": detail_url}, status=200)
         else:
             errors = form.errors.get_json_data()
             return JsonResponse({"success": False, "errors": errors}, status=400)    
@@ -80,15 +82,15 @@ class ListCustomers(LoginRequiredMixin, ListView):
         if search:
             decrypted_matches = Client.objects.none()
 
-            for obj in Client.objects.iterator(chunk_size=128):
+            for obj in Client.objects.order_by('-id').iterator(chunk_size=128):
                 try:
                     fields = [obj.full_name, obj.cpf, obj.phone, obj.email, obj.city]
                     if any(search.lower() in field.lower() for field in fields):
-                        decrypted_matches |= Client.objects.filter(pk=obj.pk)
+                        decrypted_matches |= Client.objects.order_by('-id').filter(pk=obj.pk)
                 except Exception:
                     continue  # Ignore decryption errors for invalid records
 
-            # Combines normal and decrypted search results
+            # Replace queryset with decrypted search results
             queryset = decrypted_matches
 
         if state:
