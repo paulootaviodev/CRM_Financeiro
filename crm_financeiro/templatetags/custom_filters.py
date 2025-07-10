@@ -15,3 +15,8 @@ def format_phone(value):
     elif len(value) == 10:
         return f"({value[:2]}){value[2:6]}-{value[6:]}"
     return value
+
+@register.filter(name='format_currency')
+def format_currency(value):
+    # Format with 2 decimal places and currency symbol
+    return f"R$ {value:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')

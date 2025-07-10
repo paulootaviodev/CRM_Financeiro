@@ -1,0 +1,128 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block simulations_active %}active{% endblock %}
+
+{% block content %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Simulações</h1>
+
+    <form method="get" action="{% url 'simulation_action_router' %}" class="row g-3 mb-4">
+        <!-- Barra de pesquisa -->
+        <div class="col-md-12 mb-3">
+            <label for="search" class="form-label" style="text-align: left;">Pesquisa:</label>
+            <input type="text" name="search" class="form-control" placeholder="Pesquisar por nome, CPF, telefone, email, cidade..." value="{{ request.GET.search }}">
+        </div>
+
+        <!-- Filtros individuais -->
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.state.name }}" class="form-label" style="text-align: left;">{{ form.state.label }}</label>
+            {{ form.state }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.marital_status.name }}" class="form-label" style="text-align: left;">{{ form.marital_status.label }}</label>
+            {{ form.marital_status }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.employment_status.name }}" class="form-label" style="text-align: left;">{{ form.employment_status.label }}</label>
+            {{ form.employment_status }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.birth_date_initial.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_initial.label }}</label>
+            {{ form.birth_date_initial }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.birth_date_final.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_final.label }}</label>
+            {{ form.birth_date_final }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.created_at_initial.name }}" class="form-label" style="text-align: left;">{{ form.created_at_initial.label }}</label>
+            {{ form.created_at_initial }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.created_at_final.name }}" class="form-label" style="text-align: left;">{{ form.created_at_final.label }}</label>
+            {{ form.created_at_final }}
+        </div>
+
+        <!-- Botão de filtro -->
+        <div class="col-md-12">
+            <button type="submit" name="action" value="filter" class="btn btn-primary">Filtrar</button>
+            <button type="submit" name="action" value="export" class="btn btn-primary">Exportar CSV</button>
+        </div>
+    </form>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            {% if simulations|length == 1 %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ simulations|length }} simulação</h6>
+            {% else %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ simulations|length }} simulações</h6>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome completo</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>E-mail</th>
+                            <th>Cidade</th>
+                            <th>Estado</th>
+                            <th>Estado civil</th>
+                            <th>Data de nascimento</th>
+                            <th>Situação empregatícia</th>
+                            <th>Valor liberado</th>
+                            <th>Data criado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for simulation in simulations %}
+                        <tr>
+                            <td><a href="{% url 'detail_simulation' simulation.slug %}">{{ simulation.full_name }}</a></td>
+                            <td>{{ simulation.cpf|format_cpf }}</td>
+                            <td>{{ simulation.phone|format_phone }}</td>
+                            <td>{{ simulation.email }}</td>
+                            <td>{{ simulation.city }}</td>
+                            <td>{{ simulation.get_state_display }}</td>
+                            <td>{{ simulation.get_marital_status_display }}</td>
+                            <td>{{ simulation.birth_date }}</td>
+                            <td>{{ simulation.get_employment_status_display }}</td>
+                            <td>{{ simulation.released_value|format_currency }}</td>
+                            <td>{{ simulation.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination">
+        {% with request.GET.urlencode as querystring %}
+            {% if page_obj.has_previous %}
+                <div class="d-flex justify-content-end mb-4">
+                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">← Página anterior</a>
+                </div>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <div class="d-flex justify-content-end mb-4">
+                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Próxima página →</a>
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endif %}
+</div>
+<!-- /.container-fluid -->
+{% endblock %}

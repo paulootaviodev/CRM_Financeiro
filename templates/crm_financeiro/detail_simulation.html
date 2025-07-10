@@ -1,0 +1,63 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block simulations_active %}active{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Dados da simulação</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Nome:</label>
+          <div>{{ simulation.full_name }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">CPF:</label>
+          <div>{{ simulation.cpf|format_cpf }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Telefone:</label>
+          <div>{{ simulation.phone|format_phone }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Email:</label>
+          <div>{{ simulation.email }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Cidade:</label>
+          <div>{{ simulation.city }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Estado:</label>
+          <div>{{ simulation.get_state_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Estado Civil:</label>
+          <div>{{ simulation.get_marital_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Nascimento:</label>
+          <div>{{ simulation.birth_date }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Ocupação:</label>
+          <div>{{ simulation.get_employment_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data criado:</label>
+          <div>{{ simulation.created_at }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Valor liberado:</label>
+          <div>{{ simulation.released_value|format_currency }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
