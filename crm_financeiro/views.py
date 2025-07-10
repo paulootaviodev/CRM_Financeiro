@@ -3,11 +3,12 @@ from django.urls import reverse
 from django.views.generic import TemplateView, ListView, DetailView, View
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CustomLoginForm, ClientForm, ClientFilterForm
+from .forms import CustomLoginForm, ClientForm, ClientFilterForm, SimulationFilterForm
 from django.utils.timezone import now
 from urllib.parse import urlencode
 from django.shortcuts import redirect
 from .models import Client
+from landing_page.models import CreditSimulationLead
 import csv
 
 
@@ -57,7 +58,7 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
             return JsonResponse({"success": False, "errors": errors}, status=400)    
 
 
-class ClientFormActionRouter(View):
+class ClientFormActionRouter(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         action = request.GET.get('action', 'filter')
 
@@ -83,11 +84,11 @@ class ListCustomers(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        search_result = encrypted_search(self.request.GET, queryset)
+        search_result = encrypted_search(self.request.GET, queryset, Client)
         return search_result
 
 
-class ClientCSVExportView(View):
+class ClientCSVExportView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         timestamp = now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -122,7 +123,7 @@ class ClientCSVExportView(View):
 
     def get_queryset(self):
         queryset = Client.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, queryset)
+        search_result = encrypted_search(self.request.GET, queryset, Client)
         return search_result
 
 
@@ -134,8 +135,85 @@ class DetailCustomer(LoginRequiredMixin, DetailView):
     slug_url_kwarg = 'slug'
 
 
+class SimulationFormActionRouter(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        action = request.GET.get('action', 'filter')
+
+        if action == 'export':
+            # Redirect to export view, keeping filters
+            return redirect(f"{reverse('export_simulations')}?{urlencode(request.GET)}")
+        else:
+            # Redirect to list view with filters
+            return redirect(f"{reverse('list_simulations')}?{urlencode(request.GET)}")
+
+
+class ListSimulations(LoginRequiredMixin, ListView):
+    template_name = "crm_financeiro/list_simulations.html"
+    model = CreditSimulationLead
+    context_object_name = 'simulations'
+    paginate_by = 50
+    ordering = '-id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = SimulationFilterForm(self.request.GET)
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
+        return search_result
+
+
+class SimulationsCSVExportView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        timestamp = now().strftime('%Y-%m-%d_%H-%M-%S')
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="simulations-{timestamp}.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Nome Completo', 'CPF', 'Telefone', 'Email', 'Cidade', 'Estado', 'Estado Civil',
+            'Situação Empregatícia', 'Data de Nascimento', 'Valor liberado', 'Criado em',
+            'Política de Privacidade'
+        ])
+
+        for simulation in queryset:
+            writer.writerow([
+                simulation.full_name,
+                simulation.cpf,
+                simulation.phone,
+                simulation.email,
+                simulation.city,
+                simulation.get_state_display(),
+                simulation.get_marital_status_display(),
+                simulation.get_employment_status_display(),
+                simulation.birth_date,
+                simulation.released_value,
+                simulation.created_at.strftime('%Y-%m-%d_%H-%M-%S'),
+                simulation.privacy_policy
+            ])
+
+        return response
+
+    def get_queryset(self):
+        queryset = CreditSimulationLead.objects.order_by('-id').all()
+        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
+        return search_result
+
+
+class DetailSimulation(LoginRequiredMixin, DetailView):
+    template_name = "crm_financeiro/detail_simulation.html"
+    model = CreditSimulationLead
+    context_object_name = 'simulation'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+
 @staticmethod
-def encrypted_search(params, queryset):
+def encrypted_search(params, queryset, model):
     search = params.get('search')
     state = params.get('state')
     marital_status = params.get('marital_status')
@@ -145,15 +223,17 @@ def encrypted_search(params, queryset):
     birth_date_final = params.get('birth_date_final')
     client_since_initial = params.get('client_since_initial')
     client_since_final = params.get('client_since_final')
+    created_at_initial = params.get('created_at_initial')
+    created_at_final = params.get('created_at_final')
 
     if search:
-        decrypted_matches = Client.objects.none()
+        decrypted_matches = model.objects.none()
 
-        for obj in Client.objects.order_by('-id').iterator(chunk_size=128):
+        for obj in model.objects.order_by('-id').iterator(chunk_size=128):
             try:
                 fields = [obj.full_name, obj.cpf, obj.phone, obj.email, obj.city]
                 if any(search.lower() in field.lower() for field in fields):
-                    decrypted_matches |= Client.objects.order_by('-id').filter(pk=obj.pk)
+                    decrypted_matches |= model.objects.order_by('-id').filter(pk=obj.pk)
             except Exception:
                 continue  # Ignore decryption errors for invalid records
 
@@ -182,5 +262,12 @@ def encrypted_search(params, queryset):
         queryset = queryset.filter(client_since__gte=client_since_initial)
     elif client_since_final:
         queryset = queryset.filter(client_since__lte=client_since_final)
+
+    if created_at_initial and created_at_final:
+        queryset = queryset.filter(created_at__range=[created_at_initial, created_at_final])
+    elif created_at_initial:
+        queryset = queryset.filter(created_at__gte=created_at_initial)
+    elif created_at_final:
+        queryset = queryset.filter(created_at__lte=created_at_final)
 
     return queryset
