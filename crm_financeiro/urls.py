@@ -5,6 +5,7 @@ from .views import ListCustomers, ClientCSVExportView, DetailCustomer
 from .views import ListSimulations, SimulationsCSVExportView, DetailSimulation
 from .views import ClientFormActionRouter, SimulationFormActionRouter
 
+
 urlpatterns = [
     path('', Dashboard.as_view(), name='dashboard'),
     path("cadastrar-cliente/", RegisterCustomer.as_view(), name="register_customer"),
