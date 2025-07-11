@@ -1,14 +1,17 @@
 from django.http import HttpResponse, JsonResponse
-from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView, View
+from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views.generic import TemplateView, ListView, DetailView, View, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CustomLoginForm, ClientForm, ClientFilterForm, SimulationFilterForm
 from django.utils.timezone import now
 from urllib.parse import urlencode
 from django.shortcuts import redirect
-from .models import Client
+from .models import Client, Installment
 from landing_page.models import CreditSimulationLead
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 import csv
 
 
@@ -135,6 +138,74 @@ class DetailCustomer(LoginRequiredMixin, DetailView):
     slug_url_kwarg = 'slug'
 
 
+class CustomerDeleteView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        client = get_object_or_404(Client, slug=kwargs['slug'])
+
+        has_unpaid_installments = Installment.objects.filter(
+            loan_proposal__client=client,
+            is_paid=False
+        ).exists()
+
+        if has_unpaid_installments:
+            messages.error(
+                request,
+                "Não é possível marcar o cliente para exclusão. Existem parcelas não quitadas associadas a ele."
+            )
+            return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+
+        if client.marked_for_deletion == False:
+            client.marked_for_deletion = True
+            client.is_active = False
+            client.deletion_request_date = now().date()
+        else:
+            client.marked_for_deletion = False
+            client.deletion_request_date = None
+            
+        client.save()
+
+        if client.marked_for_deletion == True:
+            messages.success(request, "Cliente marcado para exclusão com sucesso.")
+        else:
+            messages.success(request, "Exclusão do cliente cancelada com sucesso.")
+
+        return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+
+
+class CustomerDeactivateView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        client = get_object_or_404(Client, slug=kwargs['slug'])
+
+        has_unpaid_installments = Installment.objects.filter(
+            loan_proposal__client=client,
+            is_paid=False
+        ).exists()
+
+        if has_unpaid_installments:
+            messages.error(
+                request,
+                "Não é possível desativar o cliente. Existem parcelas não quitadas associadas a ele."
+            )
+            return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+        
+        if client.marked_for_deletion == True:
+            messages.error(
+                request,
+                "Não é possível ativar o cliente. Está conta já foi marcada para exclusão."
+            )
+            return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+        
+        client.is_active = False if client.is_active == True else True
+        client.save()
+
+        if client.is_active == True:
+            messages.success(request, "Cliente ativado com sucesso.")
+        else:
+            messages.success(request, "Cliente desativado com sucesso.")
+
+        return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+
+
 class SimulationFormActionRouter(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         action = request.GET.get('action', 'filter')
@@ -225,6 +296,8 @@ def encrypted_search(params, queryset, model):
     client_since_final = params.get('client_since_final')
     created_at_initial = params.get('created_at_initial')
     created_at_final = params.get('created_at_final')
+    client_is_active = params.get('is_active')
+    marked_for_deletion = params.get('marked_for_deletion')
 
     if search:
         decrypted_matches = model.objects.none()
@@ -269,5 +342,13 @@ def encrypted_search(params, queryset, model):
         queryset = queryset.filter(created_at__gte=created_at_initial)
     elif created_at_final:
         queryset = queryset.filter(created_at__lte=created_at_final)
+    
+    if client_is_active:
+        client_is_active = True if client_is_active == 'true' else False
+        queryset = queryset.filter(is_active=client_is_active)
+    
+    if marked_for_deletion:
+        marked_for_deletion = True if marked_for_deletion == 'true' else False
+        queryset = queryset.filter(marked_for_deletion=marked_for_deletion)
 
     return queryset
