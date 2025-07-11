@@ -90,6 +90,9 @@ class Client(EncryptedPerson):
     def save(self, *args, **kwargs):
         if self.cpf:
             self.cpf_hash = hashlib.sha256(self.cpf.encode()).hexdigest()
+
+        if self.is_active and self.marked_for_deletion:
+            raise ValueError("Um cliente ativo não pode estar marcado para exclusão.")
         
         is_new = self.pk is None
         super().save(*args, **kwargs)

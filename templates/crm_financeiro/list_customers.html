@@ -88,6 +88,8 @@
                             <th>Data de nascimento</th>
                             <th>Situação empregatícia</th>
                             <th>Cliente desde</th>
+                            <th>Está ativo</th>
+                            <th>Marcado para exclusão</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -103,6 +105,8 @@
                             <td>{{ client.birth_date }}</td>
                             <td>{{ client.get_employment_status_display }}</td>
                             <td>{{ client.client_since }}</td>
+                            <td>{{ client.is_active|yesno:"Sim,Não" }}</td>
+                            <td>{{ client.marked_for_deletion|yesno:"Sim,Não" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

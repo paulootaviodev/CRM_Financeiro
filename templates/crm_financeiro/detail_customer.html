@@ -52,6 +52,14 @@
           <label class="form-label fw-bold mb-1">Data de Cadastro:</label>
           <div>{{ client.client_since }}</div>
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Está ativo:</label>
+          <div>{{ client.is_active|yesno:"Sim,Não" }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Marcado para exclusão:</label>
+          <div>{{ client.marked_for_deletion|yesno:"Sim,Não" }}</div>
+        </div>
       </div>
     </div>
   </div>
