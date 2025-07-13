@@ -79,8 +79,10 @@ class EncryptedPerson(models.Model):
 class Client(EncryptedPerson):
     cpf_hash = models.CharField(max_length=64, unique=True, editable=False, blank=False, null=False, verbose_name="Hash do CPF")
     slug = slug = models.SlugField(unique=True, max_length=128, editable=False, blank=True, null=False, verbose_name="Slug")
-    is_active = models.BooleanField(default=True, verbose_name="Cliente ativo")
+    is_active = models.BooleanField(default=True, editable=True, verbose_name="Cliente ativo")
     client_since = models.DateTimeField(auto_now_add=True, verbose_name='Cliente Desde')
+    marked_for_deletion = models.BooleanField(default=False, editable=True, verbose_name="Marcado para exclusão")
+    deletion_request_date = models.DateField(blank=True, null=True, editable=True, verbose_name="Data de solicitação de exclusão")
 
     def __str__(self):
         return f"Cliente {self.id} - {self.full_name}"
@@ -88,6 +90,9 @@ class Client(EncryptedPerson):
     def save(self, *args, **kwargs):
         if self.cpf:
             self.cpf_hash = hashlib.sha256(self.cpf.encode()).hexdigest()
+
+        if self.is_active and self.marked_for_deletion:
+            raise ValueError("Um cliente ativo não pode estar marcado para exclusão.")
         
         is_new = self.pk is None
         super().save(*args, **kwargs)

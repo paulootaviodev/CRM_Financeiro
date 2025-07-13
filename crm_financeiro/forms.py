@@ -100,6 +100,26 @@ class ClientFilterForm(forms.Form):
         required=False
     )
 
+    is_active = forms.ChoiceField(
+        choices=[('true', 'Sim'), ('false', 'Não')],
+        label="Cliente ativo:",
+        widget=forms.Select(attrs={
+            'id': 'is_active',
+            'class': 'form-control'
+        }),
+        required=False
+    )
+
+    marked_for_deletion = forms.ChoiceField(
+        choices=[('false', 'Não'), ('true', 'Sim')],
+        label="Marcado para exclusão:",
+        widget=forms.Select(attrs={
+            'id': 'marked_for_deletion',
+            'class': 'form-control'
+        }),
+        required=False
+    )
+
 
 class SimulationFilterForm(ClientFilterForm):
     created_at_initial = forms.DateField(label="Criado em - Inicial:", widget=forms.DateInput(attrs={

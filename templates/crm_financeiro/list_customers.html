@@ -47,6 +47,15 @@
             <label for="{{ form.client_since_final.name }}" class="form-label" style="text-align: left;">{{ form.client_since_final.label }}</label>
             {{ form.client_since_final }}
         </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.is_active.name }}" class="form-label" style="text-align: left;">{{ form.is_active.label }}</label>
+            {{ form.is_active }}
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.marked_for_deletion.name }}" class="form-label" style="text-align: left;">{{ form.marked_for_deletion.label }}</label>
+            {{ form.marked_for_deletion }}
+        </div>
 
         <!-- Botão de filtro -->
         <div class="col-md-12">
@@ -79,6 +88,8 @@
                             <th>Data de nascimento</th>
                             <th>Situação empregatícia</th>
                             <th>Cliente desde</th>
+                            <th>Está ativo</th>
+                            <th>Marcado para exclusão</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,6 +105,8 @@
                             <td>{{ client.birth_date }}</td>
                             <td>{{ client.get_employment_status_display }}</td>
                             <td>{{ client.client_since }}</td>
+                            <td>{{ client.is_active|yesno:"Sim,Não" }}</td>
+                            <td>{{ client.marked_for_deletion|yesno:"Sim,Não" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
