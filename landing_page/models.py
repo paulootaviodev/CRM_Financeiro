@@ -5,7 +5,7 @@ import hashlib
 
 
 class CreditSimulationLead(EncryptedPerson):
-    cpf_hash = models.CharField(max_length=64, unique=True, editable=False, blank=False, null=False, verbose_name="Hash do CPF")
+    cpf_hash = models.CharField(max_length=64, unique=False, editable=False, blank=False, null=False, verbose_name="Hash do CPF")
     slug = slug = models.SlugField(unique=True, max_length=128, editable=False, blank=True, null=False, verbose_name="Slug")
     released_value = models.DecimalField(editable=False, max_digits=14, decimal_places=2, blank=False, null=False, verbose_name="Valor liberado")
     number_of_installments = models.PositiveSmallIntegerField(editable=False, blank=False, null=False, verbose_name="Quantidade de parcelas")
