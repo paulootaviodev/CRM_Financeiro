@@ -4,3 +4,4 @@ from django.apps import AppConfig
 class CrmFinanceiroConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'crm_financeiro'
+    verbose_name = 'CRM Financeiro'

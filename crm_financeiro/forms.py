@@ -1,7 +1,7 @@
-from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from landing_page.forms import CreditSimulationForm
-from crm_financeiro.models import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
+from django import forms
+from utils.field_choices import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
 
 
 class CustomLoginForm(AuthenticationForm):
@@ -58,7 +58,9 @@ class ClientFilterForm(forms.Form):
         required=False
     )
 
-    birth_date_initial = forms.DateField(label="Data de Nascimento - Inicial:", widget=forms.DateInput(attrs={
+    birth_date_initial = forms.DateField(
+        label="Data de Nascimento - Inicial:",
+        widget=forms.DateInput(attrs={
             'id': 'birth_date_initial',
             'class': 'form-control',
             'type': 'date'
@@ -66,7 +68,9 @@ class ClientFilterForm(forms.Form):
         required=False
     )
 
-    birth_date_final = forms.DateField(label="Data de Nascimento - Final:", widget=forms.DateInput(attrs={
+    birth_date_final = forms.DateField(
+        label="Data de Nascimento - Final:",
+        widget=forms.DateInput(attrs={
             'id': 'birth_date_final',
             'class': 'form-control',
             'type': 'date'
@@ -84,7 +88,9 @@ class ClientFilterForm(forms.Form):
         required=False
     )
 
-    client_since_initial = forms.DateField(label="Cliente Desde - Inicial:", widget=forms.DateInput(attrs={
+    client_since_initial = forms.DateField(
+        label="Cliente Desde - Inicial:",
+        widget=forms.DateInput(attrs={
             'id': 'client_since_initial',
             'class': 'form-control',
             'type': 'date'
@@ -92,7 +98,9 @@ class ClientFilterForm(forms.Form):
         required=False
     )
 
-    client_since_final = forms.DateField(label="Cliente Desde - Final:", widget=forms.DateInput(attrs={
+    client_since_final = forms.DateField(
+        label="Cliente Desde - Final:",
+        widget=forms.DateInput(attrs={
             'id': 'client_since_final',
             'class': 'form-control',
             'type': 'date'
@@ -122,7 +130,9 @@ class ClientFilterForm(forms.Form):
 
 
 class SimulationFilterForm(ClientFilterForm):
-    created_at_initial = forms.DateField(label="Criado em - Inicial:", widget=forms.DateInput(attrs={
+    created_at_initial = forms.DateField(
+        label="Criado em - Inicial:",
+        widget=forms.DateInput(attrs={
             'id': 'created_at_initial',
             'class': 'form-control',
             'type': 'date'
@@ -130,7 +140,9 @@ class SimulationFilterForm(ClientFilterForm):
         required=False
     )
 
-    created_at_final = forms.DateField(label="Criado em - Final:", widget=forms.DateInput(attrs={
+    created_at_final = forms.DateField(
+        label="Criado em - Final:",
+        widget=forms.DateInput(attrs={
             'id': 'created_at_final',
             'class': 'form-control',
             'type': 'date'

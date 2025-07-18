@@ -1,16 +1,17 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from ..forms import SimulationFilterForm
-from django.utils.timezone import now
-from urllib.parse import urlencode
-from django.shortcuts import redirect
 from landing_page.models import CreditSimulationLead
-from django.contrib import messages
 from utils.encrypted_lead_search_engine import encrypted_search
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, View
+from django.contrib import messages
+from django.utils.timezone import now
+from django.urls import reverse
+from django.shortcuts import redirect
+from ..forms import SimulationFilterForm
+
 import csv
+from urllib.parse import urlencode
 
 
 class SimulationFormActionRouter(LoginRequiredMixin, View):
@@ -38,9 +39,15 @@ class ListSimulations(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self):
-        queryset = super().get_queryset()
-        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
-        return search_result
+        search_params = self.request.GET
+
+        # Check if any search parameter is present
+        if search_params:
+            base_queryset = super().get_queryset()
+            return encrypted_search(search_params, base_queryset)
+
+        # Return empty queryset if no search input
+        return self.model.objects.none()
 
 
 class SimulationsCSVExportView(LoginRequiredMixin, View):
@@ -77,8 +84,8 @@ class SimulationsCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        queryset = CreditSimulationLead.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
+        base_queryset = CreditSimulationLead.objects.order_by('-id').all()
+        search_result = encrypted_search(self.request.GET, base_queryset)
         return search_result
 
 

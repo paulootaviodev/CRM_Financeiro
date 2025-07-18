@@ -1,16 +1,17 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
 from ..forms import ClientForm, ClientFilterForm
-from django.utils.timezone import now
-from urllib.parse import urlencode
-from django.shortcuts import redirect
-from ..models import Client, Installment
-from django.contrib import messages
 from utils.encrypted_lead_search_engine import encrypted_search
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from ..models import Client, Installment
+from django.views.generic import TemplateView, ListView, DetailView, View
+from django.contrib import messages
+from django.utils.timezone import now
+from django.urls import reverse
+from django.shortcuts import redirect
+
 import csv
+from urllib.parse import urlencode
 
 
 class RegisterCustomer(LoginRequiredMixin, TemplateView):
@@ -70,9 +71,15 @@ class ListCustomers(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self):
-        queryset = super().get_queryset()
-        search_result = encrypted_search(self.request.GET, queryset, Client)
-        return search_result
+        search_params = self.request.GET
+
+        # Check if any search parameter is present
+        if search_params:
+            base_queryset = super().get_queryset()
+            return encrypted_search(search_params, base_queryset)
+        
+        # Return empty queryset if no search input
+        return self.model.objects.none()
 
 
 class ClientCSVExportView(LoginRequiredMixin, View):
@@ -109,8 +116,8 @@ class ClientCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        queryset = Client.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, queryset, Client)
+        base_queryset = Client.objects.order_by('-id').all()
+        search_result = encrypted_search(self.request.GET, base_queryset)
         return search_result
 
 
@@ -142,17 +149,13 @@ class CustomerDeleteView(LoginRequiredMixin, View):
             client.marked_for_deletion = True
             client.is_active = False
             client.deletion_request_date = now().date()
+            messages.success(request, "Cliente marcado para exclusão com sucesso.")
         else:
             client.marked_for_deletion = False
             client.deletion_request_date = None
+            messages.success(request, "Exclusão do cliente cancelada com sucesso.")
             
         client.save()
-
-        if client.marked_for_deletion == True:
-            messages.success(request, "Cliente marcado para exclusão com sucesso.")
-        else:
-            messages.success(request, "Exclusão do cliente cancelada com sucesso.")
-
         return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
 
 

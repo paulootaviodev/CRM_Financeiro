@@ -1,5 +1,5 @@
-from django.contrib.auth.views import LoginView, LogoutView
 from ..forms import CustomLoginForm
+from django.contrib.auth.views import LoginView, LogoutView
 
 class CustomLoginView(LoginView):
     template_name = 'crm_financeiro/login.html'
