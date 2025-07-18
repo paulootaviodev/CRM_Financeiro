@@ -1,22 +1,21 @@
-def get_decrypted_matches(search, model):
+def get_decrypted_matches(search, queryset):
     """
     Use the iterator to search for the search term in encrypted fields
     in the database without overloading memory.
     """
-    matches = model.objects.none()
-    model_items = model.objects.order_by('-id')
+    matched_ids = []
 
-    for obj in model_items.iterator(chunk_size=128):
+    for obj in queryset.iterator(chunk_size=128):
         try:
             fields = [obj.full_name, obj.cpf, obj.phone, obj.email, obj.city]
             if any(search.lower() in (field or '').lower() for field in fields):
-                matches |= model_items.filter(pk=obj.pk)
+                matched_ids.append(obj.pk)
         except Exception:
             continue
 
-    return matches
+    return queryset.filter(pk__in=matched_ids)
 
-def encrypted_search(params, queryset, model):
+def encrypted_search(params, queryset):
     """
     Performs a complete database search based on the fields entered in the form.
     Searches for encrypted and unencrypted fields without overloading memory.
@@ -24,7 +23,7 @@ def encrypted_search(params, queryset, model):
     # Search bar
     search = params.get('search')
     if search:
-        queryset = get_decrypted_matches(search, model)
+        queryset = get_decrypted_matches(search, queryset)
 
     # Filters
     filter_map = {

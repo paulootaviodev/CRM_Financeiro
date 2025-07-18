@@ -71,9 +71,15 @@ class ListCustomers(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self):
-        queryset = super().get_queryset()
-        search_result = encrypted_search(self.request.GET, queryset, Client)
-        return search_result
+        search_params = self.request.GET
+
+        # Check if any search parameter is present
+        if search_params:
+            base_queryset = super().get_queryset()
+            return encrypted_search(search_params, base_queryset)
+        
+        # Return empty queryset if no search input
+        return self.model.objects.none()
 
 
 class ClientCSVExportView(LoginRequiredMixin, View):
@@ -110,8 +116,8 @@ class ClientCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        queryset = Client.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, queryset, Client)
+        base_queryset = Client.objects.order_by('-id').all()
+        search_result = encrypted_search(self.request.GET, base_queryset)
         return search_result
 
 

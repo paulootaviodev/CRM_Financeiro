@@ -39,9 +39,15 @@ class ListSimulations(LoginRequiredMixin, ListView):
         return context
     
     def get_queryset(self):
-        queryset = super().get_queryset()
-        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
-        return search_result
+        search_params = self.request.GET
+
+        # Check if any search parameter is present
+        if search_params:
+            base_queryset = super().get_queryset()
+            return encrypted_search(search_params, base_queryset)
+
+        # Return empty queryset if no search input
+        return self.model.objects.none()
 
 
 class SimulationsCSVExportView(LoginRequiredMixin, View):
@@ -78,8 +84,8 @@ class SimulationsCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        queryset = CreditSimulationLead.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, queryset, CreditSimulationLead)
+        base_queryset = CreditSimulationLead.objects.order_by('-id').all()
+        search_result = encrypted_search(self.request.GET, base_queryset)
         return search_result
 
 
