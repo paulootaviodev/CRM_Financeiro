@@ -1,5 +1,5 @@
-from django.views.generic import ListView, DetailView, TemplateView
 from .models import BlogPost
+from django.views.generic import ListView, DetailView, TemplateView
 
 
 class BlogHomePage(ListView):

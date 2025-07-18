@@ -1,16 +1,17 @@
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
 from ..forms import ClientForm, ClientFilterForm
-from django.utils.timezone import now
-from urllib.parse import urlencode
-from django.shortcuts import redirect
-from ..models import Client, Installment
-from django.contrib import messages
 from utils.encrypted_lead_search_engine import encrypted_search
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from ..models import Client, Installment
+from django.views.generic import TemplateView, ListView, DetailView, View
+from django.contrib import messages
+from django.utils.timezone import now
+from django.urls import reverse
+from django.shortcuts import redirect
+
 import csv
+from urllib.parse import urlencode
 
 
 class RegisterCustomer(LoginRequiredMixin, TemplateView):
@@ -142,17 +143,13 @@ class CustomerDeleteView(LoginRequiredMixin, View):
             client.marked_for_deletion = True
             client.is_active = False
             client.deletion_request_date = now().date()
+            messages.success(request, "Cliente marcado para exclusão com sucesso.")
         else:
             client.marked_for_deletion = False
             client.deletion_request_date = None
+            messages.success(request, "Exclusão do cliente cancelada com sucesso.")
             
         client.save()
-
-        if client.marked_for_deletion == True:
-            messages.success(request, "Cliente marcado para exclusão com sucesso.")
-        else:
-            messages.success(request, "Exclusão do cliente cancelada com sucesso.")
-
         return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
 
 

@@ -10,14 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 from os import getenv
+
 from dotenv import load_dotenv
+from pathlib import Path
+
 from django.contrib.messages import constants as message_constants
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables
 load_dotenv()
 
 # Quick-start development settings - unsuitable for production
@@ -96,10 +99,13 @@ DATABASES = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'redis://:{getenv('REDIS_PASSWORD')}@{getenv('REDIS_HOST')}:{getenv('REDIS_PORT')}/{getenv('REDIS_DB')}',
+        'BACKEND': getenv('CACHE_ENGINE'),
+        'LOCATION': f'redis://:{getenv('CACHE_PASSWORD')} \
+                    @{getenv('CACHE_HOST')} \
+                    :{getenv('CACHE_PORT')} \
+                    /{getenv('CACHE_DB')}',
         'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+            'CLIENT_CLASS': getenv('CACHE_CLIENT_CLASS')
         }
     }
 }
@@ -160,7 +166,7 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'login'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = getenv('EMAIL_BACKEND')
 EMAIL_HOST = getenv('SMTP_HOST')
 EMAIL_PORT = getenv('SMTP_PORT')
 EMAIL_USE_TLS = getenv('SMTP_TLS')

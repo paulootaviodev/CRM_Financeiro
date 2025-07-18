@@ -1,16 +1,17 @@
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from ..forms import SimulationFilterForm
-from django.utils.timezone import now
-from urllib.parse import urlencode
-from django.shortcuts import redirect
 from landing_page.models import CreditSimulationLead
-from django.contrib import messages
 from utils.encrypted_lead_search_engine import encrypted_search
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView, View
+from django.contrib import messages
+from django.utils.timezone import now
+from django.urls import reverse
+from django.shortcuts import redirect
+from ..forms import SimulationFilterForm
+
 import csv
+from urllib.parse import urlencode
 
 
 class SimulationFormActionRouter(LoginRequiredMixin, View):

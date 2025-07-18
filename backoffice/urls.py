@@ -15,8 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
+from django.conf import global_settings
+from django.urls import include, path
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -27,6 +27,6 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if global_settings.DEBUG:
+    urlpatterns += static(global_settings.MEDIA_URL, document_root=global_settings.MEDIA_ROOT)
+    urlpatterns += static(global_settings.STATIC_URL, document_root=global_settings.STATIC_ROOT)

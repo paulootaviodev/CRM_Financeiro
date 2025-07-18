@@ -4,10 +4,16 @@ from PIL import Image
 from io import BytesIO
 
 def process_image(image):
+    """
+    Resize and crop large images to maintain the 16/9 aspect ratio and maximum resolution of 1920x1080.
+    This process is performed in memory before saving the image to storage.
+    """
     valid_extensions = ['jpg', 'jpeg', 'png']
     filename = image.name.lower()
+
     if not any(filename.endswith(ext) for ext in valid_extensions):
         raise ValidationError("A imagem deve estar em formato JPG, JPEG ou PNG.")
+    
     if image.size > 5 * 1024 * 1024:
         raise ValidationError("A imagem não pode ultrapassar 5MB.")
 

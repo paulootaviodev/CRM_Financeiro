@@ -3,6 +3,9 @@ from django.core.cache import cache
 from django.utils.timezone import now
 
 def get_client_ip(request):
+    """
+    Return the client IP obtained through HTTP_X_FORWARDED_FOR or through REMOTE_ADDR.
+    """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         return x_forwarded_for.split(',')[0]

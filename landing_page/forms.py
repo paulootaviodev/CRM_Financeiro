@@ -1,36 +1,16 @@
-from django import forms
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from crm_financeiro.models import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
-import re
 
-def remove_non_numeric(value: str) -> str:
-    """Remove all non-numeric characters from the input string."""
-    return re.sub(r'\D', '', value)
-
-def validate_cpf(cpf: str) -> bool:
-    """Validate CPF number by checking its structure and check digits."""
-    if not re.fullmatch(r"\d{11}", cpf):
-        return False
-    
-    if cpf == cpf[0] * 11:
-        return False
-    
-    for i in range(9, 11):
-        sum_digits = sum(int(cpf[num]) * ((i + 1) - num) for num in range(0, i))
-        check_digit = ((sum_digits * 10) % 11) % 10
-        if check_digit != int(cpf[i]):
-            return False
-    return True
-
-def validate_email_format(email):
-    """Valida o formato do e-mail usando regex."""
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    return re.match(email_regex, email)
+from django import forms
+from utils.field_choices import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
+from utils.field_validations import remove_non_numeric, validate_cpf, validate_email_format
 
 
 class CreditSimulationForm(forms.Form):
-    full_name = forms.CharField(max_length=255, label="Nome completo:", widget=forms.TextInput(attrs={
+    full_name = forms.CharField(
+        max_length=255,
+        label="Nome completo:",
+        widget=forms.TextInput(attrs={
             'id': 'full_name',
             'class': 'form-control',
             'placeholder': 'Seu nome completo...',
@@ -38,7 +18,10 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    cpf = forms.CharField(max_length=14, label="CPF:", widget=forms.TextInput(attrs={
+    cpf = forms.CharField(
+        max_length=14,
+        label="CPF:",
+        widget=forms.TextInput(attrs={
             'id': 'cpf',
             'class': 'form-control',
             'placeholder': 'xxx.xxx.xxx-xx',
@@ -46,7 +29,10 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    city = forms.CharField(max_length=128, label="Cidade:", widget=forms.TextInput(attrs={
+    city = forms.CharField(
+        max_length=128,
+        label="Cidade:",
+        widget=forms.TextInput(attrs={
             'id': 'city',
             'class': 'form-control',
             'placeholder': 'A cidade onde você mora...',
@@ -74,7 +60,9 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    birth_date = forms.DateField(label="Data de Nascimento:", widget=forms.DateInput(attrs={
+    birth_date = forms.DateField(
+        label="Data de Nascimento:",
+        widget=forms.DateInput(attrs={
             'id': 'birth_date',
             'class': 'form-control',
             'type': 'date',
@@ -92,7 +80,10 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    phone = forms.CharField(max_length=15, label="Telefone:", widget=forms.TextInput(attrs={
+    phone = forms.CharField(
+        max_length=15,
+        label="Telefone:",
+        widget=forms.TextInput(attrs={
             'id': 'phone',
             'class': 'form-control',
             'placeholder': '(xx)xxxxx-xxxx',
@@ -100,7 +91,10 @@ class CreditSimulationForm(forms.Form):
         })
     )
 
-    email = forms.EmailField(max_length=128, label="E-mail:", widget=forms.EmailInput(attrs={
+    email = forms.EmailField(
+        max_length=128,
+        label="E-mail:",
+        widget=forms.EmailInput(attrs={
             'id': 'email',
             'class': 'form-control',
             'placeholder': 'Seu e-mail...',
@@ -120,26 +114,36 @@ class CreditSimulationForm(forms.Form):
     )
 
     def clean_cpf(self):
+        """Check if the CPF number is valid."""
         cpf = self.cleaned_data.get('cpf', '')
         cleaned_cpf = remove_non_numeric(cpf)
+
         if not validate_cpf(cleaned_cpf):
             raise forms.ValidationError("Número de CPF inválido.")
+        
         return cleaned_cpf
 
     def clean_phone(self):
+        """Check if the phone number is valid."""
         phone = self.cleaned_data.get('phone', '')
         cleaned_phone = remove_non_numeric(phone)
+
         if len(cleaned_phone) < 10 or len(cleaned_phone) > 11:
             raise forms.ValidationError("Número de telefone inválido.")
+        
         return cleaned_phone
     
     def clean_email(self):
+        """Check if the email is valid."""
         email = self.cleaned_data.get('email', '')
+
         if not validate_email_format(email):
             raise forms.ValidationError("Endereço de e-mail inválido.")
+        
         return email
 
     def clean_birth_date(self):
+        """Check if age is between 18 and 80 years old using date of birth."""
         date_of_birth = self.cleaned_data.get("birth_date")
         current_date = datetime.now().date()
         age = relativedelta(current_date, date_of_birth).years
@@ -150,9 +154,12 @@ class CreditSimulationForm(forms.Form):
         return date_of_birth
 
     def clean_privacy_policy(self):
+        """Check if the user has agreed to the privacy policy."""
         agreed = self.cleaned_data.get("privacy_policy")
 
         if not agreed:
-            raise forms.ValidationError("Você precisa concordar com a política de privacidade e uso de dados.")
+            raise forms.ValidationError(
+                "Você precisa concordar com a política de privacidade e uso de dados."
+            )
 
         return agreed

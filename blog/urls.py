@@ -1,5 +1,5 @@
-from django.urls import path
 from .views import BlogHomePage, BlogPost, BlogAbout
+from django.urls import path
 
 urlpatterns = [
     path('', BlogHomePage.as_view(), name='blog_home_page'),
