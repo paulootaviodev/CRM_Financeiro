@@ -25,19 +25,9 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
     
     def post(self, request, *args, **kwargs):
         form = CreditSimulationForm(request.POST)
+        
         if form.is_valid():
-            client = Client()
-
-            client.full_name = form.cleaned_data['full_name']
-            client.cpf = form.cleaned_data['cpf']
-            client.city = form.cleaned_data['city']
-            client.state = form.cleaned_data['state']
-            client.marital_status = form.cleaned_data['marital_status']
-            client.birth_date = form.cleaned_data['birth_date']
-            client.employment_status = form.cleaned_data['employment_status']
-            client.phone = form.cleaned_data['phone']
-            client.email = form.cleaned_data['email']
-            client.privacy_policy = form.cleaned_data['privacy_policy']
+            client = Client(**form.cleaned_data)
             client.save()
 
             detail_url = reverse('detail_customer', kwargs={'slug': client.slug})
