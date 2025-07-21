@@ -1,7 +1,7 @@
 from .login import CustomLoginView, CustomLogoutView
 from .dashboard import Dashboard
 from .customer import RegisterCustomer, ClientFormActionRouter, ListCustomers, ClientCSVExportView
-from .customer import DetailCustomer, CustomerDeleteView, CustomerDeactivateView
+from .customer import DetailCustomer, CustomerDeleteView, CustomerDeactivateView, UpdateCustomer
 from .simulation import SimulationFormActionRouter, ListSimulations, SimulationsCSVExportView
 from .simulation import DetailSimulation, SimulationDeleteView
 
@@ -16,6 +16,7 @@ __all__ = [
     "DetailCustomer",
     "CustomerDeleteView",
     "CustomerDeactivateView",
+    "UpdateCustomer",
     "SimulationFormActionRouter",
     "ListSimulations",
     "SimulationsCSVExportView",

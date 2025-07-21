@@ -10,6 +10,7 @@ from .views import (
     DetailCustomer,
     CustomerDeleteView,
     CustomerDeactivateView,
+    UpdateCustomer,
     SimulationFormActionRouter,
     ListSimulations,
     SimulationsCSVExportView,
@@ -32,6 +33,7 @@ urlpatterns = [
     path("cliente/<slug:slug>/", DetailCustomer.as_view(), name="detail_customer"),
     path("delete-customer/<slug:slug>/", CustomerDeleteView.as_view(), name="delete_customer"),
     path("deactivate-customer/<slug:slug>/", CustomerDeactivateView.as_view(), name="deactivate_customer"),
+    path("update-customer/<slug:slug>/", UpdateCustomer.as_view(), name="update_customer"),
     path("client-action-router/", ClientFormActionRouter.as_view(), name="client_action_router"),
 
     # Simulations

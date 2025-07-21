@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import AuthenticationForm
-from landing_page.forms import CreditSimulationForm
+from .models import Client
 from django import forms
 from utils.field_choices import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
+from utils.field_validations import remove_non_numeric, validate_email_format
 
 
 class CustomLoginForm(AuthenticationForm):
@@ -31,32 +32,111 @@ class CustomLoginForm(AuthenticationForm):
     )
 
 
-class ClientForm(CreditSimulationForm):
+class EditableFieldsMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['state'].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['city'] = forms.CharField(
+            max_length=128,
+            label="Cidade:",
+            widget=forms.TextInput(attrs={
+                'id': 'city',
+                'class': 'form-control',
+                'placeholder': 'A cidade onde você mora...',
+                'required': True
+            })
+        )
+
+        self.fields['state'] = forms.ChoiceField(
+            choices=[('', 'Selecione um estado')] + STATE_CHOICES,
+            label="Estado:",
+            widget=forms.Select(attrs={
+                'id': 'state',
+                'class': 'form-control',
+                'required': True
+            })
+        )
+
+        self.fields['marital_status'] = forms.ChoiceField(
+            choices=[('', 'Selecione um estado civil')] + MARITAL_STATUS,
+            label="Estado civil:",
+            widget=forms.Select(attrs={
+                'id': 'marital_status',
+                'class': 'form-control',
+                'required': True
+            })
+        )
+
+        self.fields['employment_status'] = forms.ChoiceField(
+            choices=[('', 'Selecione sua situação empregatícia')] + EMPLOYMENT_STATUS,
+            label="Situação Empregatícia:",
+            widget=forms.Select(attrs={
+                'id': 'employment_status',
+                'class': 'form-control',
+                'required': True
+            })
+        )
+
+        self.fields['phone'] = forms.CharField(
+            max_length=15,
+            label="Telefone:",
+            widget=forms.TextInput(attrs={
+                'id': 'phone',
+                'class': 'form-control',
+                'placeholder': '(xx)xxxxx-xxxx',
+                'required': True
+            })
+        )
+
+        self.fields['email'] = forms.EmailField(
+            max_length=128,
+            label="E-mail:",
+            widget=forms.EmailInput(attrs={
+                'id': 'email',
+                'class': 'form-control',
+                'placeholder': 'Seu e-mail...',
+                'required': True
+            })
+        )
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '')
+        cleaned_phone = remove_non_numeric(phone)
+
+        if len(cleaned_phone) < 10 or len(cleaned_phone) > 11:
+            raise forms.ValidationError("Número de telefone inválido.")
+        
+        return cleaned_phone
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+
+        if not validate_email_format(email):
+            raise forms.ValidationError("Endereço de e-mail inválido.")
+        
+        return email
 
 
-class ClientFilterForm(forms.Form):
-    state = forms.ChoiceField(
-        choices=[('', 'Selecione um estado')] + STATE_CHOICES,
-        label="Estado:",
-        widget=forms.Select(attrs={
-            'id': 'state',
-            'class': 'form-control'
-        }),
-        required=False
-    )
+class UpdateClientForm(EditableFieldsMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    marital_status = forms.ChoiceField(
-        choices=[('', 'Selecione um estado civil')] + MARITAL_STATUS,
-        label="Estado civil:",
-        widget=forms.Select(attrs={
-            'id': 'marital_status',
-            'class': 'form-control'
-        }),
-        required=False
-    )
+        if self.instance:
+            self.fields['phone'].initial = self.instance.phone
+            self.fields['email'].initial = self.instance.email
+
+    class Meta:
+        model = Client
+        fields = ['city', 'state', 'marital_status', 'employment_status']
+
+
+class ClientFilterForm(EditableFieldsMixin, forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.required = False
+            field.widget.attrs.pop('required', None)
 
     birth_date_initial = forms.DateField(
         label="Data de Nascimento - Inicial:",
@@ -74,16 +154,6 @@ class ClientFilterForm(forms.Form):
             'id': 'birth_date_final',
             'class': 'form-control',
             'type': 'date'
-        }),
-        required=False
-    )
-
-    employment_status = forms.ChoiceField(
-        choices=[('', 'Selecione sua situação empregatícia')] + EMPLOYMENT_STATUS,
-        label="Situação Empregatícia:",
-        widget=forms.Select(attrs={
-            'id': 'employment_status',
-            'class': 'form-control'
         }),
         required=False
     )
@@ -127,6 +197,13 @@ class ClientFilterForm(forms.Form):
         }),
         required=False
     )
+
+    class Meta:
+        fields = [
+            'state', 'marital_status', 'birth_date_initial', 'birth_date_final',
+            'employment_status', 'client_since_initial', 'client_since_final',
+            'is_active', 'marked_for_deletion'
+        ]
 
 
 class SimulationFilterForm(ClientFilterForm):

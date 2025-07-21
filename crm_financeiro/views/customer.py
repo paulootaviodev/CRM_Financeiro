@@ -1,4 +1,5 @@
-from ..forms import ClientForm, ClientFilterForm
+from ..forms import ClientFilterForm, UpdateClientForm
+from landing_page.forms import CreditSimulationForm
 from utils.encrypted_lead_search_engine import encrypted_search
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
@@ -19,24 +20,14 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['client_form'] = ClientForm()
+        context['client_form'] = CreditSimulationForm()
         return context
     
     def post(self, request, *args, **kwargs):
-        form = ClientForm(request.POST)
+        form = CreditSimulationForm(request.POST)
+        
         if form.is_valid():
-            client = Client()
-
-            client.full_name = form.cleaned_data['full_name']
-            client.cpf = form.cleaned_data['cpf']
-            client.city = form.cleaned_data['city']
-            client.state = form.cleaned_data['state']
-            client.marital_status = form.cleaned_data['marital_status']
-            client.birth_date = form.cleaned_data['birth_date']
-            client.employment_status = form.cleaned_data['employment_status']
-            client.phone = form.cleaned_data['phone']
-            client.email = form.cleaned_data['email']
-            client.privacy_policy = form.cleaned_data['privacy_policy']
+            client = Client(**form.cleaned_data)
             client.save()
 
             detail_url = reverse('detail_customer', kwargs={'slug': client.slug})
@@ -127,6 +118,36 @@ class DetailCustomer(LoginRequiredMixin, DetailView):
     context_object_name = 'client'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+
+class UpdateCustomer(LoginRequiredMixin, TemplateView):
+    template_name = "crm_financeiro/update_customer.html"
+
+    def get_client(self):
+        return get_object_or_404(Client, slug=self.kwargs.get('slug'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        client = self.get_client()
+        context['client_form'] = UpdateClientForm(instance=client)
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        client = self.get_client()
+        form = UpdateClientForm(request.POST, instance=client)
+        
+        if form.is_valid():
+            client = form.save(commit=False)
+            client.phone = form.cleaned_data['phone']
+            client.email = form.cleaned_data['email']
+            client.save()
+
+            detail_url = reverse('detail_customer', kwargs={'slug': client.slug})
+            return JsonResponse({"success": True, "redirect_url": detail_url}, status=200)
+        else:
+            errors = form.errors.get_json_data()
+            return JsonResponse({"success": False, "errors": errors}, status=400)
 
 
 class CustomerDeleteView(LoginRequiredMixin, View):
