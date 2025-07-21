@@ -99,10 +99,12 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': getenv('CACHE_ENGINE'),
-        'LOCATION': f'redis://:{getenv('CACHE_PASSWORD')} \
-                    @{getenv('CACHE_HOST')} \
-                    :{getenv('CACHE_PORT')} \
-                    /{getenv('CACHE_DB')}',
+        'LOCATION': (
+            f"redis://:{getenv('CACHE_PASSWORD')}"
+            f"@{getenv('CACHE_HOST')}"
+            f":{getenv('CACHE_PORT')}"
+            f"/{getenv('CACHE_DB')}"
+        ),
         'OPTIONS': {
             'CLIENT_CLASS': getenv('CACHE_CLIENT_CLASS')
         }

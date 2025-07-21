@@ -71,11 +71,12 @@ class EncryptedPerson(models.Model):
     
     # Metadata
     privacy_policy = models.BooleanField(
-        **EDITABLE_FIELD_KWARGS,
+        **NON_EDITABLE_FIELD_KWARGS,
         verbose_name="Política de Privacidade"
     )
     updated_at = models.DateTimeField(
         **EDITABLE_FIELD_KWARGS,
+        auto_now=True,
         verbose_name='Data Atualizado'
     )
 
