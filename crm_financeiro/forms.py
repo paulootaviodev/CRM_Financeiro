@@ -1,8 +1,14 @@
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Client
 from django import forms
-from utils.field_choices import STATE_CHOICES, EMPLOYMENT_STATUS, MARITAL_STATUS
 from utils.field_validations import remove_non_numeric, validate_email_format
+from utils.field_choices import (
+    STATE_CHOICES,
+    EMPLOYMENT_STATUS,
+    MARITAL_STATUS,
+    LOAN_PROPOSAL_STATUS,
+    PAYMENT_STATUS
+)
 
 
 class CustomLoginForm(AuthenticationForm):
@@ -232,3 +238,90 @@ class SimulationFilterForm(ClientFilterForm):
             'state', 'marital_status', 'birth_date_initial', 'birth_date_final',
             'employment_status', 'created_at_initial', 'created_at_final'
         ]
+
+
+class LoanProposalFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.required = False
+            field.widget.attrs.pop('required', None)
+
+    status = forms.ChoiceField(
+        choices=[('', 'Selecione um status')] + LOAN_PROPOSAL_STATUS,
+        label="Status:",
+        widget=forms.Select(attrs={
+            'id': 'status',
+            'class': 'form-control',
+            'required': False
+        })
+    )
+
+    payment_status = forms.ChoiceField(
+        choices=[('', 'Selecione um status de pagamento')] + PAYMENT_STATUS,
+        label="Status de pagamento:",
+        widget=forms.Select(attrs={
+            'id': 'payment_status',
+            'class': 'form-control',
+            'required': False
+        })
+    )
+
+    released_value_min = forms.DecimalField(
+        label="Valor mínimo liberado:",
+        widget=forms.NumberInput(attrs={
+            'id': 'released_value_min',
+            'class': 'form-control',
+            'required': False,
+            'step': '0.01'
+        })
+    )
+    
+    released_value_max = forms.DecimalField(
+        label="Valor máximo liberado:",
+        widget=forms.NumberInput(attrs={
+            'id': 'released_value_max',
+            'class': 'form-control',
+            'required': False,
+            'step': '0.01'
+        })
+    )
+
+    number_of_installments_min = forms.DecimalField(
+        label="Quantidade mínima de parcelas:",
+        widget=forms.NumberInput(attrs={
+            'id': 'number_of_installments_min',
+            'class': 'form-control',
+            'required': False
+        })
+    )
+
+    number_of_installments_max = forms.DecimalField(
+        label="Quantidade máxima de parcelas:",
+        widget=forms.NumberInput(attrs={
+            'id': 'number_of_installments_max',
+            'class': 'form-control',
+            'required': False
+        })
+    )
+
+    value_of_installments_min = forms.DecimalField(
+        label="Valor mínimo das parcelas:",
+        widget=forms.NumberInput(attrs={
+            'id': 'value_of_installments_min',
+            'class': 'form-control',
+            'required': False,
+            'step': '0.01'
+        })
+    )
+    
+    value_of_installments_max = forms.DecimalField(
+        label="Valor máximo das parcelas:",
+        widget=forms.NumberInput(attrs={
+            'id': 'value_of_installments_max',
+            'class': 'form-control',
+            'required': False,
+            'step': '0.01'
+        })
+    )

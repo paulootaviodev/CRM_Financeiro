@@ -16,6 +16,9 @@ from .views import (
     SimulationsCSVExportView,
     DetailSimulation,
     SimulationDeleteView,
+    ListLoanProposals,
+    LoanProposalsCSVExportView,
+    LoanProposalsFormActionRouter
 )
 
 urlpatterns = [
@@ -42,4 +45,9 @@ urlpatterns = [
     path("simulacao/<slug:slug>/", DetailSimulation.as_view(), name="detail_simulation"),
     path("delete-simulation/<slug:slug>/", SimulationDeleteView.as_view(), name="delete_simulation"),
     path("simulation-action-router/", SimulationFormActionRouter.as_view(), name="simulation_action_router"),
+
+    # Loan proposal
+    path("listar-propostas/", ListLoanProposals.as_view(), name="list_loan_proposals"),
+    path("exportar-propostas/", LoanProposalsCSVExportView.as_view(), name="export_loan_proposals"),
+    path("loan-proposals-action-router/", LoanProposalsFormActionRouter.as_view(), name="loan_proposals_action_router"),
 ]
