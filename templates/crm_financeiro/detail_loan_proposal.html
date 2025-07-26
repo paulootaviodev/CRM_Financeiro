@@ -1,0 +1,78 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block loan_proposal_active %}active{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Dados da proposta</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Status:</label>
+          <div>{{ loan_proposal.get_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Status do pagamento:</label>
+          <div>{{ loan_proposal.get_payment_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Valor liberado:</label>
+          <div>{{ loan_proposal.released_value }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Quantidade de parcelas:</label>
+          <div>{{ loan_proposal.number_of_installments }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Valor das parcelas:</label>
+          <div>{{ loan_proposal.value_of_installments }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Nome:</label>
+          <div>{{ loan_proposal.client.full_name }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">CPF:</label>
+          <div>{{ loan_proposal.client.cpf|format_cpf }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Telefone:</label>
+          <div>{{ loan_proposal.client.phone|format_phone }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">E-mail:</label>
+          <div>{{ loan_proposal.client.email }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Cidade:</label>
+          <div>{{ loan_proposal.client.city }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Estado:</label>
+          <div>{{ loan_proposal.client.state }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center mt-4">
+    {% if loan_proposal.status == "0001" %}
+    <a href="{% url 'send_loan_proposal' loan_proposal.slug %}" class="btn btn-primary">Enviar para o cliente</a>
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% elif loan_proposal.status == "0003" %}
+    <a href="{% url 'pay_loan_proposal' loan_proposal.slug %}" class="btn btn-success">Pagar na conta do cliente</a>
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% elif loan_proposal.status == "0002" %}
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% elif loan_proposal.status == "0004" %}
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% elif loan_proposal.status == "0005" %}
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

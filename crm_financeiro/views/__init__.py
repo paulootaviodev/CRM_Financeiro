@@ -5,6 +5,8 @@ from .customer import DetailCustomer, CustomerDeleteView, CustomerDeactivateView
 from .simulation import SimulationFormActionRouter, ListSimulations, SimulationsCSVExportView
 from .simulation import DetailSimulation, SimulationDeleteView
 from .loan_proposal import ListLoanProposals, LoanProposalsCSVExportView, LoanProposalsFormActionRouter
+from .loan_proposal import CreateLoanProposal, DetailLoanProposal, LoanProposalCancellationView
+from .loan_proposal import LoanProposalPaymentView, ReplyLoanProposalView, SendLoanProposalEmailView
 
 __all__ = [
     "CustomLoginView",
@@ -25,5 +27,11 @@ __all__ = [
     "SimulationDeleteView",
     "ListLoanProposals",
     "LoanProposalsCSVExportView",
-    "LoanProposalsFormActionRouter"
+    "LoanProposalsFormActionRouter",
+    "CreateLoanProposal",
+    "DetailLoanProposal",
+    "LoanProposalCancellationView",
+    "LoanProposalPaymentView",
+    "ReplyLoanProposalView",
+    "SendLoanProposalEmailView"
 ]

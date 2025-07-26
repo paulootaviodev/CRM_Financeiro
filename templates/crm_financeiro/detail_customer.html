@@ -66,7 +66,7 @@
   </div>
   <div class="text-center mt-4">
     {% if client.is_active == True %}
-    <button type="button" class="btn btn-primary">Gerar proposta</button>
+    <a href="{% url 'create_loan_proposal' client.slug %}" class="btn btn-primary">Gerar proposta</a>
     <a href="{% url 'deactivate_customer' client.slug %}" class="btn btn-warning">Desativar cliente</a>
     {% else %}
     <a href="{% url 'deactivate_customer' client.slug %}" class="btn btn-success">Ativar cliente</a>

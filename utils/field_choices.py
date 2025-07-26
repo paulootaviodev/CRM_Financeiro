@@ -21,8 +21,7 @@ MARITAL_STATUS = [
 
 LOAN_PROPOSAL_STATUS = [
     ('0001', 'Gerada'), ('0002', 'Enviada para o cliente'), ('0003', 'Aceita'), ('0004', 'Recusada'),
-    ('0005', 'Expirada'), ('0006', 'Cancelada'), ('0007', 'Em conferência'),
-    ('0008', 'Paga na conta do cliente')
+    ('0005', 'Expirada'), ('0006', 'Cancelada'), ('0008', 'Paga na conta do cliente')
 ]
 
 PAYMENT_STATUS = [

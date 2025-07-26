@@ -9,9 +9,9 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Parcelas</h1>
+    <h1 class="h3 mb-2 text-gray-800">Propostas</h1>
 
-    <form method="get" action="{% url 'list_loan_proposals' %}" class="row g-3 mb-4">
+    <form method="get" action="{% url 'loan_proposals_action_router' %}" class="row g-3 mb-4">
         <!-- Barra de pesquisa -->
         <div class="col-md-12 mb-3">
             <label for="search" class="form-label" style="text-align: left;">Pesquisa:</label>
@@ -62,10 +62,10 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            {% if clientes|length == 1 %}
-            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ clients|length }} proposta</h6>
+            {% if loan_proposals|length == 1 %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ loan_proposals|length }} proposta</h6>
             {% else %}
-            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ clients|length }} propostas</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ loan_proposals|length }} propostas</h6>
             {% endif %}
         </div>
         <div class="card-body">
@@ -83,21 +83,23 @@
                             <th>Telefone</th>
                             <th>E-mail</th>
                             <th>Cidade</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for loan_proposal in loan_proposals %}
                         <tr>
-                            <td><a href="#">{{ loan_proposal.status }}</a></td>
-                            <td>{{ loan_proposal.payment_status }}</td>
+                            <td><a href="{% url 'detail_loan_proposal' loan_proposal.slug %}">{{ loan_proposal.get_status_display }}</a></td>
+                            <td>{{ loan_proposal.get_payment_status_display }}</td>
                             <td>{{ loan_proposal.released_value }}</td>
                             <td>{{ loan_proposal.number_of_installments }}</td>
                             <td>{{ loan_proposal.value_of_installments }}</td>
                             <td>{{ loan_proposal.client.full_name }}</td>
-                            <td>{{ loan_proposal.cpf|format_cpf }}</td>
-                            <td>{{ loan_proposal.phone|format_phone }}</td>
-                            <td>{{ loan_proposal.email }}</td>
-                            <td>{{ loan_proposal.city }}</td>
+                            <td>{{ loan_proposal.client.cpf|format_cpf }}</td>
+                            <td>{{ loan_proposal.client.phone|format_phone }}</td>
+                            <td>{{ loan_proposal.client.email }}</td>
+                            <td>{{ loan_proposal.client.city }}</td>
+                            <td>{{ loan_proposal.client.state }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
