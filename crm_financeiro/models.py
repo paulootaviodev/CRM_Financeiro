@@ -268,6 +268,11 @@ class Installment(models.Model):
         default=False,
         verbose_name="Pago"
     )
+    is_canceled = models.BooleanField(
+        editable=True,
+        default=False,
+        verbose_name="Está cancelado"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Data Criado'

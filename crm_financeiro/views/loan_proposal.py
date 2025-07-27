@@ -15,6 +15,8 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from utils.email_sender import send_email_response
 from django.core import signing
+from django.db.models import Q
+from django.shortcuts import render
 
 import csv
 from urllib.parse import urlencode
@@ -56,10 +58,12 @@ class CreateLoanProposal(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         client = get_object_or_404(Client, slug=kwargs['slug'])
 
-        restrictions = Installment.objects.filter(
+        restrictions = Installment.objects.order_by('-id').select_related('loan_proposal').filter(
+            Q(loan_proposal__payment_status__in=["0003", "0004"]),
             loan_proposal__client=client,
-            is_paid=False
-        ).exists() or client.marked_for_deletion == True or client.is_active == False
+            due_date__lt=now().date(),
+            is_canceled=False
+        ).exists() or client.marked_for_deletion or not client.is_active
 
         if restrictions:
             messages.error(
@@ -86,9 +90,6 @@ class CreateLoanProposal(LoginRequiredMixin, View):
         
         # Create Loan Proposal
         loan_proposal = create_loan_proposal_object(client, simulation)
-
-        # Create Installments
-        create_installment_object(loan_proposal)
 
         messages.success(request, "Proposta gerada com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={'slug': loan_proposal.slug}))
@@ -124,7 +125,7 @@ class ListLoanProposals(LoginRequiredMixin, ListView):
         # Check if any search parameter is present
         if search_params:
             base_queryset = super().get_queryset()
-            return encrypted_search(search_params, base_queryset, 'Client')
+            return encrypted_search(search_params, base_queryset, 'client')
         
         # Return empty queryset if no search input
         return self.model.objects.none()
@@ -161,7 +162,7 @@ class LoanProposalsCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        base_queryset = LoanProposal.objects.order_by('-id').all()
+        base_queryset = LoanProposal.objects.order_by('-id').select_related('client').all()
         search_result = encrypted_search(self.request.GET, base_queryset, 'Client')
         return search_result
 
@@ -177,11 +178,13 @@ class DetailLoanProposal(LoginRequiredMixin, DetailView):
 class LoanProposalCancellationView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         loan_proposal = get_object_or_404(LoanProposal, slug=kwargs['slug'])
+
+        Installment.objects.order_by('-id').select_related('loan_proposal').filter(
+            loan_proposal=loan_proposal
+        ).update(is_canceled=True)
+
         loan_proposal.status = "0006"
         loan_proposal.save()
-
-        installments = Installment.objects.order_by('-id').filter(loan_proposal=loan_proposal).all()
-        installments.delete()
 
         messages.success(request, "Proposta cancelada com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={"slug": loan_proposal.slug}))
@@ -191,6 +194,7 @@ class LoanProposalPaymentView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         # Here you can implement your payment logic according to your needs.
         loan_proposal = get_object_or_404(LoanProposal, slug=kwargs['slug'])
+        create_installment_object(loan_proposal)
         loan_proposal.status = "0008"
         loan_proposal.save()
 
@@ -214,16 +218,17 @@ class ReplyLoanProposalView(View):
         try:
             value = signing.loads(kwargs['token'], max_age=86400) # 24h
             pk, slug, cpf_hash = value.split(":")
-            client = Client.objects.get(pk=pk, slug=slug, cpf_hash=cpf_hash)
-        except (signing.BadSignature, ValueError, Client.DoesNotExist):
-            return HttpResponse("Token inválido ou cliente não encontrado.", status=403)
+            client = Client.objects.order_by('-id').get(pk=pk, slug=slug, cpf_hash=cpf_hash)
 
-        loan_proposal = LoanProposal.objects.filter(
+        except (signing.BadSignature, ValueError, Client.DoesNotExist):
+            return render(request, "crm_financeiro/email_response_error.html")
+
+        loan_proposal = LoanProposal.objects.order_by('-id').select_related('client').filter(
             client=client, slug=kwargs['slug'], status='0002'
         ).first()
 
         if not loan_proposal:
-            return HttpResponse("Proposta não encontrada ou já respondida.", status=404)
+            return render(request, "crm_financeiro/email_response_error.html")
 
         if kwargs['action'] == 'accept':
             loan_proposal.status = '0003'
@@ -233,4 +238,4 @@ class ReplyLoanProposalView(View):
             return HttpResponse("Ação inválida.", status=400)
 
         loan_proposal.save()
-        return HttpResponse("Resposta registrada com sucesso.")
+        return render(request, "crm_financeiro/email_response.html")
