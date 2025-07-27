@@ -89,7 +89,7 @@
 
             <!-- Nav Item -->
             <li class="nav-item {% block loan_proposal_active %}{% endblock %}">
-                <a class="nav-link pt-1 pb-1" href="#">
+                <a class="nav-link pt-1 pb-1" href="{% url 'list_loan_proposals' %}">
                     <i class="fa fa-list-ul" aria-hidden="true"></i>
                     <span>Propostas</span></a>
             </li>
@@ -230,6 +230,12 @@
     <!-- Bootstrap core JavaScript-->
     <script src="{% static 'assets/crm_financeiro/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'assets/crm_financeiro/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="{% static 'assets/crm_financeiro/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{% static 'assets/crm_financeiro/js/sb-admin-2.min.js' %}"></script>
 </body>
 
 </html>

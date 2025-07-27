@@ -10,6 +10,7 @@ from utils.request_rate_limit import rate_limited_view
 from django.conf import settings
 from django.views.generic import TemplateView
 from utils.cloudflare_captcha_validator import validate_turnstile
+from utils.credit_simulation_api_request import send_data_to_api
 
 API_URL = getenv('API_URL')
 
@@ -47,6 +48,14 @@ def create_credit_simulation_lead_object(
     lead.save()
 
 
+def format_currency(value):
+    value = f"{float(value):,.2f}" \
+        .replace(",", "X") \
+        .replace(".", ",") \
+        .replace("X", ".")
+    return value
+
+
 class LandingPage(TemplateView):
     template_name = 'landing_page/index.html'
 
@@ -78,9 +87,6 @@ class LandingPage(TemplateView):
         form = CreditSimulationForm(request.POST)
         if form.is_valid():
             try:
-                # Prepare headers for the API request
-                headers = {"Accept": "application/json", "Content-Type": "application/json"}
-
                 # Prepare payload with cleaned form data
                 payload = {
                     "full_name": form.cleaned_data["full_name"],
@@ -95,7 +101,7 @@ class LandingPage(TemplateView):
                     "privacy_policy": form.cleaned_data["privacy_policy"],
                 }
                 # Make the API request
-                response = requests.post(API_URL, json=payload, headers=headers)
+                response = send_data_to_api(payload, API_URL)
                 http_status_code = response.status_code
 
                 # If successful response
@@ -115,14 +121,16 @@ class LandingPage(TemplateView):
                     )
 
                     # Format Brazilian currency output
-                    formatted_value = f"{float(response_released_value):,.2f}" \
-                        .replace(",", "X") \
-                        .replace(".", ",") \
-                        .replace("X", ".")
+                    formatted_released_value = format_currency(response_released_value)
+                    formatted_value_of_installments = format_currency(response_value_of_installments)
 
                     # Return response
                     return JsonResponse(
-                        {"success": True, "data": f"R$ {formatted_value}"},
+                        {
+                            "success": True, "data": f"R$ {formatted_released_value}"
+                            f" em {response_number_of_installments}x"
+                            f" de {formatted_value_of_installments}."
+                        },
                         status=http_status_code
                     )
                 # If the API returns error

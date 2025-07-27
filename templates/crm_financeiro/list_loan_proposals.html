@@ -2,14 +2,14 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block simulations_active %}active{% endblock %}
+{% block loan_proposal_active %}active{% endblock %}
 
 {% block content %}
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Simulações</h1>
+    <h1 class="h3 mb-2 text-gray-800">Propostas</h1>
 
     {% if messages %}
         <div class="container mt-3">
@@ -24,7 +24,7 @@
         </div>
     {% endif %}
 
-    <form method="get" action="{% url 'simulation_action_router' %}" class="row g-3 mb-4">
+    <form method="get" action="{% url 'loan_proposals_action_router' %}" class="row g-3 mb-4">
         <!-- Barra de pesquisa -->
         <div class="col-md-12 mb-3">
             <label for="search" class="form-label" style="text-align: left;">Pesquisa:</label>
@@ -33,32 +33,36 @@
 
         <!-- Filtros individuais -->
         <div class="col-md-4 mb-3">
-            <label for="{{ form.state.name }}" class="form-label" style="text-align: left;">{{ form.state.label }}</label>
-            {{ form.state }}
+            <label for="{{ form.status.name }}" class="form-label" style="text-align: left;">{{ form.status.label }}</label>
+            {{ form.status }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.marital_status.name }}" class="form-label" style="text-align: left;">{{ form.marital_status.label }}</label>
-            {{ form.marital_status }}
+            <label for="{{ form.payment_status.name }}" class="form-label" style="text-align: left;">{{ form.payment_status.label }}</label>
+            {{ form.payment_status }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.employment_status.name }}" class="form-label" style="text-align: left;">{{ form.employment_status.label }}</label>
-            {{ form.employment_status }}
+            <label for="{{ form.released_value_min.name }}" class="form-label" style="text-align: left;">{{ form.released_value_min.label }}</label>
+            {{ form.released_value_min }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.birth_date_initial.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_initial.label }}</label>
-            {{ form.birth_date_initial }}
+            <label for="{{ form.released_value_max.name }}" class="form-label" style="text-align: left;">{{ form.released_value_max.label }}</label>
+            {{ form.released_value_max }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.birth_date_final.name }}" class="form-label" style="text-align: left;">{{ form.birth_date_final.label }}</label>
-            {{ form.birth_date_final }}
+            <label for="{{ form.number_of_installments_min.name }}" class="form-label" style="text-align: left;">{{ form.number_of_installments_min.label }}</label>
+            {{ form.number_of_installments_min }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.created_at_initial.name }}" class="form-label" style="text-align: left;">{{ form.created_at_initial.label }}</label>
-            {{ form.created_at_initial }}
+            <label for="{{ form.number_of_installments_max.name }}" class="form-label" style="text-align: left;">{{ form.number_of_installments_max.label }}</label>
+            {{ form.number_of_installments_max }}
         </div>
         <div class="col-md-4 mb-3">
-            <label for="{{ form.created_at_final.name }}" class="form-label" style="text-align: left;">{{ form.created_at_final.label }}</label>
-            {{ form.created_at_final }}
+            <label for="{{ form.value_of_installments_min.name }}" class="form-label" style="text-align: left;">{{ form.value_of_installments_min.label }}</label>
+            {{ form.value_of_installments_min }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.value_of_installments_max.name }}" class="form-label" style="text-align: left;">{{ form.value_of_installments_max.label }}</label>
+            {{ form.value_of_installments_max }}
         </div>
 
         <!-- Botão de filtro -->
@@ -71,10 +75,10 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            {% if simulations|length == 1 %}
-            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ simulations|length }} simulação</h6>
+            {% if loan_proposals|length == 1 %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ loan_proposals|length }} proposta</h6>
             {% else %}
-            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ simulations|length }} simulações</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ loan_proposals|length }} propostas</h6>
             {% endif %}
         </div>
         <div class="card-body">
@@ -82,33 +86,37 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>Status</th>
+                            <th>Status do pagamento</th>
+                            <th>Valor liberado</th>
+                            <th>Quantidade de parcelas</th>
+                            <th>Valor das parcelas</th>
                             <th>Nome completo</th>
                             <th>CPF</th>
                             <th>Telefone</th>
                             <th>E-mail</th>
                             <th>Cidade</th>
                             <th>Estado</th>
-                            <th>Estado civil</th>
-                            <th>Data de nascimento</th>
-                            <th>Situação empregatícia</th>
-                            <th>Valor liberado</th>
                             <th>Data criado</th>
+                            <th>Data atualizado</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for simulation in simulations %}
+                        {% for loan_proposal in loan_proposals %}
                         <tr>
-                            <td><a href="{% url 'detail_simulation' simulation.slug %}">{{ simulation.full_name }}</a></td>
-                            <td>{{ simulation.cpf|format_cpf }}</td>
-                            <td>{{ simulation.phone|format_phone }}</td>
-                            <td>{{ simulation.email }}</td>
-                            <td>{{ simulation.city }}</td>
-                            <td>{{ simulation.get_state_display }}</td>
-                            <td>{{ simulation.get_marital_status_display }}</td>
-                            <td>{{ simulation.birth_date }}</td>
-                            <td>{{ simulation.get_employment_status_display }}</td>
-                            <td>{{ simulation.released_value|format_currency }}</td>
-                            <td>{{ simulation.created_at }}</td>
+                            <td><a href="{% url 'detail_loan_proposal' loan_proposal.slug %}">{{ loan_proposal.get_status_display }}</a></td>
+                            <td>{{ loan_proposal.get_payment_status_display }}</td>
+                            <td>{{ loan_proposal.released_value }}</td>
+                            <td>{{ loan_proposal.number_of_installments }}</td>
+                            <td>{{ loan_proposal.value_of_installments }}</td>
+                            <td>{{ loan_proposal.client.full_name }}</td>
+                            <td>{{ loan_proposal.client.cpf|format_cpf }}</td>
+                            <td>{{ loan_proposal.client.phone|format_phone }}</td>
+                            <td>{{ loan_proposal.client.email }}</td>
+                            <td>{{ loan_proposal.client.city }}</td>
+                            <td>{{ loan_proposal.client.state }}</td>
+                            <td>{{ loan_proposal.created_at }}</td>
+                            <td>{{ loan_proposal.updated_at }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
