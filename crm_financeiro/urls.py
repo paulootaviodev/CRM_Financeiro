@@ -24,7 +24,11 @@ from .views import (
     LoanProposalCancellationView,
     LoanProposalPaymentView,
     ReplyLoanProposalView,
-    SendLoanProposalEmailView
+    SendLoanProposalEmailView,
+    InstallmentFormActionRouter,
+    InstallmentsCSVExportView,
+    DetailInstallment,
+    ListInstallments
 )
 
 urlpatterns = [
@@ -62,4 +66,10 @@ urlpatterns = [
     path("response/<token>/<str:action>/<slug:slug>/", ReplyLoanProposalView.as_view(), name="reply_loan_proposal"),
     path("enviar-proposta/<slug:slug>/", SendLoanProposalEmailView.as_view(), name="send_loan_proposal"),
     path("loan-proposals-action-router/", LoanProposalsFormActionRouter.as_view(), name="loan_proposals_action_router"),
+
+    # Installment
+    path("installments-action-router/", InstallmentFormActionRouter.as_view(), name="installments_action_router"),
+    path("exportar-parcelas/", InstallmentsCSVExportView.as_view(), name="export_installments"),
+    path("parcela/<slug:slug>/", DetailInstallment.as_view(), name="detail_installment"),
+    path("listar-parcelas/", ListInstallments.as_view(), name="list_installments")
 ]

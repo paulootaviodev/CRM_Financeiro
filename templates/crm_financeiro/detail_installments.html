@@ -1,0 +1,79 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block installment_active %}active{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Dados da parcela</h5>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Nome do cliente:</label>
+          <div>{{ installment.loan_proposal.client.full_name }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">CPF do cliente:</label>
+          <div>{{ installment.loan_proposal.client.cpf|format_cpf }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Status da proposta:</label>
+          <div>{{ installment.loan_proposal.get_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Status de pagamento da proposta:</label>
+          <div>{{ installment.loan_proposal.get_payment_status_display }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Número da parcela:</label>
+          <div>{{ installment.installment_number }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data de vencimento:</label>
+          <div>{{ installment.due_date }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data de pagamento:</label>
+          <div>{{ installment.payment_date }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Valor:</label>
+          <div>{{ installment.amount|format_currency }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Pago:</label>
+          <div>{{ installment.is_paid }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Está cancelado:</label>
+          <div>{{ installment.is_canceled }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data criado:</label>
+          <div>{{ installment.created_at }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data atualizado:</label>
+          <div>{{ installment.updated_at }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
