@@ -13,7 +13,7 @@ from django.utils.timezone import now
 from utils.credit_simulation_api_request import send_data_to_api
 from django.urls import reverse
 from django.shortcuts import redirect
-from utils.email_sender import send_email_response
+from utils.email_sender import send_email_response, check_custom_token
 from django.core import signing
 from django.db.models import Q
 from django.shortcuts import render
@@ -26,6 +26,8 @@ from dateutil.relativedelta import relativedelta
 API_URL = getenv('API_URL')
 
 def create_loan_proposal_object(client, simulation):
+    """Create the loan proposal in the database."""
+
     loan_proposal = LoanProposal()
     loan_proposal.client = client
     loan_proposal.status = '0001'
@@ -38,6 +40,8 @@ def create_loan_proposal_object(client, simulation):
     return loan_proposal
 
 def create_installment_object(loan_proposal):
+    """Create all installments of the loan proposal in the database."""
+
     created_at = datetime.today()
     new_due_date = (created_at + relativedelta(months=1)).replace(day=10)
 
@@ -142,7 +146,8 @@ class LoanProposalsCSVExportView(LoginRequiredMixin, View):
         writer = csv.writer(response)
         writer.writerow([
             'Status', 'Status do pagamento', 'Valor liberado', 'Quantidade de parcelas',
-            'Valor das parcelas', 'Nome completo', 'CPF', 'Telefone', 'E-mail', 'Cidade'
+            'Valor das parcelas', 'Nome completo', 'CPF', 'Telefone', 'E-mail', 'Cidade',
+            'Data criado', 'Data atualizado'
         ])
 
         for loan_proposal in queryset:
@@ -156,14 +161,16 @@ class LoanProposalsCSVExportView(LoginRequiredMixin, View):
                 loan_proposal.client.cpf,
                 loan_proposal.client.phone,
                 loan_proposal.client.email,
-                loan_proposal.client.city
+                loan_proposal.client.city,
+                loan_proposal.created_at,
+                loan_proposal.updated_at,
             ])
 
         return response
 
     def get_queryset(self):
         base_queryset = LoanProposal.objects.order_by('-id').select_related('client').all()
-        search_result = encrypted_search(self.request.GET, base_queryset, 'Client')
+        search_result = encrypted_search(self.request.GET, base_queryset, 'client')
         return search_result
 
 
@@ -179,7 +186,7 @@ class LoanProposalCancellationView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         loan_proposal = get_object_or_404(LoanProposal, slug=kwargs['slug'])
 
-        Installment.objects.order_by('-id').select_related('loan_proposal').filter(
+        Installment.objects.order_by('-id').filter(
             loan_proposal=loan_proposal
         ).update(is_canceled=True)
 
@@ -192,7 +199,7 @@ class LoanProposalCancellationView(LoginRequiredMixin, View):
 
 class LoanProposalPaymentView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        # Here you can implement your payment logic according to your needs.
+        # Here you can implement your payment logic.
         loan_proposal = get_object_or_404(LoanProposal, slug=kwargs['slug'])
         create_installment_object(loan_proposal)
         loan_proposal.status = "0008"
@@ -216,26 +223,26 @@ class SendLoanProposalEmailView(LoginRequiredMixin, View):
 class ReplyLoanProposalView(View):
     def get(self, request, *args, **kwargs):
         try:
-            value = signing.loads(kwargs['token'], max_age=86400) # 24h
-            pk, slug, cpf_hash = value.split(":")
-            client = Client.objects.order_by('-id').get(pk=pk, slug=slug, cpf_hash=cpf_hash)
-
-        except (signing.BadSignature, ValueError, Client.DoesNotExist):
+            pk, slug, cpf_hash = check_custom_token(kwargs['token'])
+            
+            client = Client.objects.order_by('-id').get(
+                pk=pk, slug=slug, cpf_hash=cpf_hash
+            )
+            loan_proposal = LoanProposal.objects.order_by('-id').get(
+                client=client, slug=kwargs['slug'], status='0002'
+            )
+        except (signing.BadSignature, ValueError, Client.DoesNotExist, LoanProposal.DoesNotExist):
             return render(request, "crm_financeiro/email_response_error.html")
 
-        loan_proposal = LoanProposal.objects.order_by('-id').select_related('client').filter(
-            client=client, slug=kwargs['slug'], status='0002'
-        ).first()
+        status_map = {
+            'accept': '0003',
+            'refuse': '0004'
+        }
 
-        if not loan_proposal:
-            return render(request, "crm_financeiro/email_response_error.html")
-
-        if kwargs['action'] == 'accept':
-            loan_proposal.status = '0003'
-        elif kwargs['action'] == 'refuse':
-            loan_proposal.status = '0004'
-        else:
+        new_status = status_map.get(kwargs['action'])
+        if not new_status:
             return HttpResponse("Ação inválida.", status=400)
 
-        loan_proposal.save()
+        loan_proposal.status = new_status
+        loan_proposal.save(update_fields=['status'])
         return render(request, "crm_financeiro/email_response.html")

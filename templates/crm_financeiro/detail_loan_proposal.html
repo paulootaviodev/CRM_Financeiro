@@ -68,6 +68,14 @@
           <label class="form-label fw-bold mb-1">Estado:</label>
           <div>{{ loan_proposal.client.state }}</div>
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data criado:</label>
+          <div>{{ loan_proposal.created_at }}</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold mb-1">Data atualizado:</label>
+          <div>{{ loan_proposal.updated_at }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -83,6 +91,8 @@
     {% elif loan_proposal.status == "0004" %}
     <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
     {% elif loan_proposal.status == "0005" %}
+    <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
+    {% elif loan_proposal.status == "0008" %}
     <a href="{% url 'delete_loan_proposal' loan_proposal.slug %}" class="btn btn-danger">Cancelar proposta</a>
     {% endif %}
   </div>

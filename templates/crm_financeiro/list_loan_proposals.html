@@ -97,6 +97,8 @@
                             <th>E-mail</th>
                             <th>Cidade</th>
                             <th>Estado</th>
+                            <th>Data criado</th>
+                            <th>Data atualizado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,6 +115,8 @@
                             <td>{{ loan_proposal.client.email }}</td>
                             <td>{{ loan_proposal.client.city }}</td>
                             <td>{{ loan_proposal.client.state }}</td>
+                            <td>{{ loan_proposal.created_at }}</td>
+                            <td>{{ loan_proposal.updated_at }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
