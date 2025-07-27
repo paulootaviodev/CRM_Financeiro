@@ -273,6 +273,14 @@ class Installment(models.Model):
         default=False,
         verbose_name="Está cancelado"
     )
+    slug = models.SlugField(
+        unique=True,
+        max_length=128,
+        editable=False,
+        blank=True,
+        null=False,
+        verbose_name="Slug"
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Data Criado'
@@ -288,6 +296,15 @@ class Installment(models.Model):
 
     def __str__(self):
         return f"Parcela {self.installment_number} da proposta {self.loan_proposal.id}"
+    
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+
+        if is_new and not self.slug:
+            self.slug = slugify(f"{self.loan_proposal.slug}{self.pk}{self.created_at}")
+            super().save(update_fields=["slug"])
+
     
     class Meta:
         verbose_name = "Parcelamento"

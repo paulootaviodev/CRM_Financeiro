@@ -1,3 +1,18 @@
+def resolve_related_field(obj, related_field):
+    """
+    Browses chained attributes using '__' as a delimiter.
+    Example: resolve_related_field(obj, 'loan_proposal__client')
+    returns obj.loan_proposal.client
+    """
+    if not related_field:
+        return obj
+    try:
+        for attr in related_field.split('__'):
+            obj = getattr(obj, attr)
+        return obj
+    except AttributeError:
+        return None
+
 def get_decrypted_matches(search, queryset, related_field=None):
     """
     Use the iterator to search for the search term in encrypted fields
@@ -7,7 +22,7 @@ def get_decrypted_matches(search, queryset, related_field=None):
 
     for obj in queryset.iterator(chunk_size=128):
         try:
-            client_obj = getattr(obj, related_field) if related_field else obj
+            client_obj = resolve_related_field(obj, related_field)
             fields = [
                 client_obj.full_name,
                 client_obj.cpf,
@@ -45,6 +60,10 @@ def encrypted_search(params, queryset, related_field=None):
         # Loan proposal filters
         'status': params.get('status') or None,
         'payment_status': params.get('payment_status') or None,
+
+        # Installment filters
+        'is_paid': params.get('is_paid') == 'true' if params.get('is_paid') else None,
+        'is_canceled': params.get('is_canceled')  == 'true' if params.get('is_canceled') else None
     }
 
     filters = {key: value for key, value in filter_map.items() if value is not None}
@@ -60,6 +79,11 @@ def encrypted_search(params, queryset, related_field=None):
         'released_value': (params.get('released_value_min'), params.get('released_value_max')),
         'number_of_installments': (params.get('number_of_installments_min'), params.get('number_of_installments_max')),
         'value_of_installments': (params.get('value_of_installments_min'), params.get('value_of_installments_max')),
+    
+        # Installment range fields
+        'due_date': (params.get('due_date_initial'), params.get('due_date_final')),
+        'payment_date': (params.get('payment_date_initial'), params.get('payment_date_final')),
+        'amount': (params.get('amount_min'), params.get('amount_max')),
     }
 
     for field, (start, end) in range_fields.items():
