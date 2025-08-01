@@ -28,7 +28,10 @@ from .views import (
     InstallmentFormActionRouter,
     InstallmentsCSVExportView,
     DetailInstallment,
-    ListInstallments
+    ListInstallments,
+    CreateBlogPost,
+    ListBlogPosts,
+    EditBlogPost
 )
 
 urlpatterns = [
@@ -71,5 +74,10 @@ urlpatterns = [
     path("installments-action-router/", InstallmentFormActionRouter.as_view(), name="installments_action_router"),
     path("exportar-parcelas/", InstallmentsCSVExportView.as_view(), name="export_installments"),
     path("parcela/<slug:slug>/", DetailInstallment.as_view(), name="detail_installment"),
-    path("listar-parcelas/", ListInstallments.as_view(), name="list_installments")
+    path("listar-parcelas/", ListInstallments.as_view(), name="list_installments"),
+
+    # Blog
+    path("criar-postagem/", CreateBlogPost.as_view(), name="create_blog_post"),
+    path("listar-postagens/", ListBlogPosts.as_view(), name="list_blog_posts"),
+    path("editar-postagem/<slug:slug>/", EditBlogPost.as_view(), name="update_blog_post")
 ]

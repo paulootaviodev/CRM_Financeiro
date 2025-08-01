@@ -111,14 +111,14 @@
 
             <!-- Nav Item -->
             <li class="nav-item {% block add_blog_post_active %}{% endblock %}">
-                <a class="nav-link pt-1 pb-1" href="#">
+                <a class="nav-link pt-1 pb-1" href="{% url 'create_blog_post' %}">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                     <span>Criar postagem</span></a>
             </li>
 
             <!-- Nav Item -->
             <li class="nav-item {% block blog_posts_active %}{% endblock %}">
-                <a class="nav-link pt-1 pb-1" href="#">
+                <a class="nav-link pt-1 pb-1" href="{% url 'list_blog_posts' %}">
                     <i class="fa fa-newspaper" aria-hidden="true"></i>
                     <span>Postagens</span></a>
             </li>

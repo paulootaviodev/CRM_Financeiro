@@ -9,6 +9,7 @@ from .loan_proposal import CreateLoanProposal, DetailLoanProposal, LoanProposalC
 from .loan_proposal import LoanProposalPaymentView, ReplyLoanProposalView, SendLoanProposalEmailView
 from .installments import InstallmentFormActionRouter, InstallmentsCSVExportView
 from .installments import DetailInstallment, ListInstallments
+from .blog import CreateBlogPost, ListBlogPosts, EditBlogPost
 
 __all__ = [
     "CustomLoginView",
@@ -39,5 +40,8 @@ __all__ = [
     "InstallmentFormActionRouter",
     "InstallmentsCSVExportView",
     "DetailInstallment",
-    "ListInstallments"
+    "ListInstallments",
+    "CreateBlogPost",
+    "ListBlogPosts",
+    "EditBlogPost"
 ]
