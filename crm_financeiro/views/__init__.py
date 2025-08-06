@@ -2,6 +2,7 @@ from .login import CustomLoginView, CustomLogoutView
 from .dashboard import Dashboard
 from .customer import RegisterCustomer, ClientFormActionRouter, ListCustomers, ClientCSVExportView
 from .customer import DetailCustomer, CustomerDeleteView, CustomerDeactivateView, UpdateCustomer
+from .customer import RegisterCustomerFromSimulation
 from .simulation import SimulationFormActionRouter, ListSimulations, SimulationsCSVExportView
 from .simulation import DetailSimulation, SimulationDeleteView
 from .loan_proposal import ListLoanProposals, LoanProposalsCSVExportView, LoanProposalsFormActionRouter
@@ -43,5 +44,6 @@ __all__ = [
     "ListInstallments",
     "CreateBlogPost",
     "ListBlogPosts",
-    "EditBlogPost"
+    "EditBlogPost",
+    "RegisterCustomerFromSimulation"
 ]
