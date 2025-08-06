@@ -31,7 +31,8 @@ from .views import (
     ListInstallments,
     CreateBlogPost,
     ListBlogPosts,
-    EditBlogPost
+    EditBlogPost,
+    RegisterCustomerFromSimulation
 )
 
 urlpatterns = [
@@ -44,6 +45,7 @@ urlpatterns = [
 
     # Client
     path("cadastrar-cliente/", RegisterCustomer.as_view(), name="register_customer"),
+    path("cadastrar-cliente-simulacao/<slug:slug>/", RegisterCustomerFromSimulation.as_view(), name="register_customer_from_simulation"),
     path("listar-clientes/", ListCustomers.as_view(), name="list_customers"),
     path("exportar-clientes/", ClientCSVExportView.as_view(), name="export_customers"),
     path("cliente/<slug:slug>/", DetailCustomer.as_view(), name="detail_customer"),

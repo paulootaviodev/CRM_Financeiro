@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from ..models import Client, Installment
+from landing_page.models import CreditSimulationLead
 from django.views.generic import TemplateView, ListView, DetailView, View
 from django.contrib import messages
 from django.utils.timezone import now
@@ -13,6 +14,27 @@ from django.shortcuts import redirect
 
 import csv
 from urllib.parse import urlencode
+
+
+class RegisterCustomerFromSimulation(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        simulation = get_object_or_404(CreditSimulationLead, slug=kwargs['slug'])
+        client = Client.objects.order_by('-id').filter(cpf_hash=simulation.cpf_hash).first()
+
+        if client:
+            messages.error(request, "Esse CPF já está cadastrado.")
+            return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+
+        fields_to_copy = [
+            'full_name', 'cpf', 'phone', 'email', 'city', 'state',
+            'marital_status', 'employment_status', 'birth_date', 'privacy_policy'
+        ]
+
+        client_data = {field: getattr(simulation, field) for field in fields_to_copy}
+        client = Client.objects.create(**client_data)
+
+        messages.success(request, "Cliente cadastrado com sucesso.")
+        return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
 
 
 class RegisterCustomer(LoginRequiredMixin, TemplateView):
