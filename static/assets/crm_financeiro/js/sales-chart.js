@@ -29,12 +29,26 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
-var myLineChart = new Chart(ctx, {
+var salesChart = new Chart(ctx, {
   type: 'line',
   data: {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
     datasets: [{
-      label: "Earnings",
+      label: "Vendas + Lucros",
+      lineTension: 0.3,
+      backgroundColor: "rgba(78, 115, 223, 0.05)",
+      borderColor: "rgba(28, 200, 138, 1)",
+      pointRadius: 3,
+      pointBackgroundColor: "rgba(28, 200, 138, 1)",
+      pointBorderColor: "rgba(28, 200, 138, 1)",
+      pointHoverRadius: 3,
+      pointHoverBackgroundColor: "rgba(28, 200, 138, 1)",
+      pointHoverBorderColor: "rgba(28, 200, 138, 1)",
+      pointHitRadius: 10,
+      pointBorderWidth: 2,
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    }, {
+      label: "Vendas",
       lineTension: 0.3,
       backgroundColor: "rgba(78, 115, 223, 0.05)",
       borderColor: "rgba(78, 115, 223, 1)",
@@ -46,7 +60,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-      data: [0, 10000, 5000, 15000, 10000, 20000, 15000, 25000, 20000, 30000, 25000, 40000],
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     }],
   },
   options: {
@@ -78,7 +92,7 @@ var myLineChart = new Chart(ctx, {
           padding: 10,
           // Include a dollar sign in the ticks
           callback: function(value, index, values) {
-            return '$' + number_format(value);
+            return 'R$ ' + number_format(value, 2, ',', '.');
           }
         },
         gridLines: {
@@ -110,7 +124,7 @@ var myLineChart = new Chart(ctx, {
       callbacks: {
         label: function(tooltipItem, chart) {
           var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-          return datasetLabel + ': $' + number_format(tooltipItem.yLabel);
+          return datasetLabel + ': R$ ' + number_format(tooltipItem.yLabel, 2, ',', '.');
         }
       }
     }

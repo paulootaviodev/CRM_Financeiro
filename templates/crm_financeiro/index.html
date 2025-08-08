@@ -1,7 +1,14 @@
 {% extends 'crm_financeiro/_partials/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block dashboard_active %}active{% endblock %}
+
+{% block code %}
+<script src="{% static 'assets/crm_financeiro/vendor/chart.js/Chart.min.js' %}" type="text/javascript" defer></script>
+<script src="{% static 'assets/crm_financeiro/js/sales-chart.js' %}" type="text/javascript" defer></script>
+<script src="{% static 'assets/crm_financeiro/js/installment-chart.js' %}" type="text/javascript" defer></script>
+{% endblock %}
 
 {% block content %}
 <div id="content">
@@ -32,8 +39,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Ganhos (Mensal)</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 40.000,00</div>
+                                    Vendas (este mês)</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ month_sales|format_currency }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -50,8 +57,8 @@
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Ganhos (Anual)</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">R$ 215.000,00</div>
+                                    Vendas + lucros (este mês)</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ month_sales_profit|format_currency }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -71,12 +78,12 @@
                                 </div>
                                 <div class="row no-gutters align-items-center">
                                     <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">3%</div>
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ default|floatformat:1 }}%</div>
                                     </div>
                                     <div class="col">
                                         <div class="progress progress-sm mr-2">
                                             <div class="progress-bar bg-info" role="progressbar"
-                                                style="width: 3%" aria-valuenow="3" aria-valuemin="0"
+                                                style="width: {{ default|floatformat:1 }}%" aria-valuenow="{{ default|floatformat:1 }}" aria-valuemin="0"
                                                 aria-valuemax="100"></div>
                                         </div>
                                     </div>
@@ -98,7 +105,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                     Propostas em andamento</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">250</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ loan_proposals_in_progress }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -119,7 +126,7 @@
                     <!-- Card Header - Dropdown -->
                     <div
                         class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Visão geral dos ganhos</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Visão geral das vendas (últimos 12 meses)</h6>
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
@@ -136,7 +143,7 @@
                     <!-- Card Header - Dropdown -->
                     <div
                         class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">Visão geral de parcelas</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Visão geral das parcelas</h6>
                     </div>
                     <!-- Card Body -->
                     <div class="card-body">
@@ -145,13 +152,13 @@
                         </div>
                         <div class="mt-4 text-center small">
                             <span class="mr-2">
-                                <i class="fas fa-circle text-primary"></i> Em dia
+                                <i class="fas fa-circle text-primary"></i> Pagas
                             </span>
                             <span class="mr-2">
-                                <i class="fas fa-circle text-warning"></i> Atrasado
+                                <i class="fas fa-circle text-warning"></i> Atrasadas
                             </span>
                             <span class="mr-2">
-                                <i class="fas fa-circle text-danger"></i> Inadimplente
+                                <i class="fas fa-circle text-success"></i> A vencer
                             </span>
                         </div>
                     </div>
@@ -162,10 +169,24 @@
     <!-- /.container-fluid -->
 </div>
 
-<!-- Page level plugins -->
-    <script src="{% static 'assets/crm_financeiro/vendor/chart.js/Chart.min.js' %}"></script>
+<script>
+    var labels = {{ labels|safe }};
+    var sales_values = {{ sales_values|safe }};
+    var profit_values = {{ profit_values|safe }};
 
-    <!-- Page level custom scripts -->
-    <script src="{% static 'assets/crm_financeiro/js/demo/chart-area-demo.js' %}"></script>
-    <script src="{% static 'assets/crm_financeiro/js/demo/chart-pie-demo.js' %}"></script>
+    var paid = {{ paid|safe }};
+    var unpaid = {{ unpaid|safe }};
+    var upcoming = {{ upcoming|safe }}
+
+    window.onload = function() {
+        salesChart.data.labels = labels;
+        salesChart.data.datasets[1].data = sales_values;
+        salesChart.data.datasets[0].data = profit_values;
+
+        installmentChart.data.datasets[0].data = [paid, unpaid, upcoming];
+        
+        salesChart.update();
+        installmentChart.update();
+    };
+</script>
 {% endblock %}
