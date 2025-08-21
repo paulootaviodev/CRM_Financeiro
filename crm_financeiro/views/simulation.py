@@ -1,5 +1,5 @@
 from landing_page.models import CreditSimulationLead
-from utils.encrypted_lead_search_engine import encrypted_search
+from utils.search_queryset import search
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,7 +31,6 @@ class ListSimulations(LoginRequiredMixin, ListView):
     model = CreditSimulationLead
     context_object_name = 'simulations'
     paginate_by = 50
-    ordering = '-id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,7 +43,7 @@ class ListSimulations(LoginRequiredMixin, ListView):
         # Check if any search parameter is present
         if search_params:
             base_queryset = super().get_queryset()
-            return encrypted_search(search_params, base_queryset)
+            return search(search_params, base_queryset)
 
         # Return empty queryset if no search input
         return self.model.objects.none()
@@ -84,9 +83,8 @@ class SimulationsCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        base_queryset = CreditSimulationLead.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, base_queryset)
-        return search_result
+        base_queryset = CreditSimulationLead.objects.all()
+        return search(self.request.GET, base_queryset)
 
 
 class DetailSimulation(LoginRequiredMixin, DetailView):

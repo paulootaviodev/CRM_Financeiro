@@ -129,24 +129,22 @@
     </div>
 
     {% if is_paginated %}
-    <div class="pagination">
-        {% with request.GET.urlencode as querystring %}
-            {% if page_obj.has_previous %}
-                <div class="d-flex justify-content-end mb-4">
-                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.previous_page_number }}&{{ querystring }}">← Página anterior</a>
-                </div>
-            {% endif %}
+    <div class="pagination mb-4">
+        {% if page_obj.has_previous %}
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-primary text-uppercase" href="{% querystring page=page_obj.previous_page_number %}">← Página anterior</a>
+            </div>
+        {% endif %}
 
-            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <span class="mr-2 ml-2 p-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
 
-            {% if page_obj.has_next %}
-                <div class="d-flex justify-content-end mb-4">
-                    <a class="btn btn-primary text-uppercase" href="?page={{ page_obj.next_page_number }}&{{ querystring }}">Próxima página →</a>
-                </div>
-            {% endif %}
-        {% endwith %}
+        {% if page_obj.has_next %}
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-primary text-uppercase" href="{% querystring page=page_obj.next_page_number %}">Próxima página →</a>
+            </div>
+        {% endif %}
     </div>
-{% endif %}
+    {% endif %}
 </div>
 <!-- /.container-fluid -->
 {% endblock %}

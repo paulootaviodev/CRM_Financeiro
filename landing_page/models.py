@@ -58,7 +58,7 @@ class CreditSimulationLead(EncryptedPerson):
         super().save(*args, **kwargs)
 
         if is_new and not self.slug:
-            self.slug = slugify(f"{self.cpf_hash}-{self.created_at}")
+            self.slug = slugify(f"{self.id}{self.cpf_hash}-{self.created_at}")
             super().save(update_fields=["slug"])
 
 

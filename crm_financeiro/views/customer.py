@@ -1,6 +1,6 @@
 from ..forms import ClientFilterForm, UpdateClientForm
 from landing_page.forms import CreditSimulationForm
-from utils.encrypted_lead_search_engine import encrypted_search
+from utils.search_queryset import search
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -76,7 +76,6 @@ class ListCustomers(LoginRequiredMixin, ListView):
     model = Client
     context_object_name = 'clients'
     paginate_by = 50
-    ordering = '-id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,7 +88,7 @@ class ListCustomers(LoginRequiredMixin, ListView):
         # Check if any search parameter is present
         if search_params:
             base_queryset = super().get_queryset()
-            return encrypted_search(search_params, base_queryset)
+            return search(search_params, base_queryset)
         
         # Return empty queryset if no search input
         return self.model.objects.none()
@@ -129,9 +128,8 @@ class ClientCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        base_queryset = Client.objects.order_by('-id').all()
-        search_result = encrypted_search(self.request.GET, base_queryset)
-        return search_result
+        base_queryset = Client.objects.all()
+        return search(self.request.GET, base_queryset)
 
 
 class DetailCustomer(LoginRequiredMixin, DetailView):
