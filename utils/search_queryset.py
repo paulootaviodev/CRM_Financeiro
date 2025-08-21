@@ -1,53 +1,10 @@
-def resolve_related_field(obj, related_field):
-    """
-    Browses chained attributes using '__' as a delimiter.
-    Example: resolve_related_field(obj, 'loan_proposal__client')
-    returns obj.loan_proposal.client
-    """
-    if not related_field:
-        return obj
-    try:
-        for attr in related_field.split('__'):
-            obj = getattr(obj, attr)
-        return obj
-    except AttributeError:
-        return None
+from django_eose import search_queryset
 
-def get_decrypted_matches(search, queryset, related_field=None):
-    """
-    Use the iterator to search for the search term in encrypted fields
-    in the database without overloading memory.
-    """
-    matched_ids = []
-
-    for obj in queryset.iterator(chunk_size=128):
-        try:
-            client_obj = resolve_related_field(obj, related_field)
-            fields = [
-                client_obj.full_name,
-                client_obj.cpf,
-                client_obj.phone,
-                client_obj.email,
-                client_obj.city,
-            ]
-
-            if any(search.lower() in (field or '').lower() for field in fields):
-                matched_ids.append(obj.pk)
-        except Exception:
-            continue
-
-    return queryset.filter(pk__in=matched_ids)
-
-def encrypted_search(params, queryset, related_field=None):
+def search(params, queryset, related_field=None):
     """
     Performs a complete database search based on the fields entered in the form.
     Searches for encrypted and unencrypted fields without overloading memory.
     """
-    # Search bar
-    search = params.get('search')
-    if search:
-        queryset = get_decrypted_matches(search, queryset, related_field)
-
     # Filters
     filter_map = {
         # Client filters
@@ -96,4 +53,21 @@ def encrypted_search(params, queryset, related_field=None):
 
     queryset = queryset.filter(**filters)
 
-    return queryset
+    # Search bar
+    search = params.get('search')
+    if search:
+        queryset = search_queryset(
+            search=search,
+            queryset=queryset,
+            related_field=related_field,
+            fields=("_encrypted_full_name",
+                    "_encrypted_cpf",
+                    "_encrypted_phone",
+                    "_encrypted_email",
+                    "city"),
+            executor='processes',
+            max_batch_size=1_000_000,
+            decrypt=True
+        )
+
+    return queryset.order_by('-id')

@@ -6,7 +6,7 @@ from django.views.generic import View, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from ..models import LoanProposal
 from ..forms import LoanProposalFilterForm
-from utils.encrypted_lead_search_engine import encrypted_search
+from utils.search_queryset import search
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.utils.timezone import now
@@ -116,7 +116,6 @@ class ListLoanProposals(LoginRequiredMixin, ListView):
     model = LoanProposal
     context_object_name = 'loan_proposals'
     paginate_by = 50
-    ordering = '-id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -129,7 +128,7 @@ class ListLoanProposals(LoginRequiredMixin, ListView):
         # Check if any search parameter is present
         if search_params:
             base_queryset = super().get_queryset()
-            return encrypted_search(search_params, base_queryset, 'client')
+            return search(search_params, base_queryset, 'client')
         
         # Return empty queryset if no search input
         return self.model.objects.none()
@@ -169,9 +168,8 @@ class LoanProposalsCSVExportView(LoginRequiredMixin, View):
         return response
 
     def get_queryset(self):
-        base_queryset = LoanProposal.objects.order_by('-id').select_related('client').all()
-        search_result = encrypted_search(self.request.GET, base_queryset, 'client')
-        return search_result
+        base_queryset = LoanProposal.objects.all()
+        return search(self.request.GET, base_queryset, 'client')
 
 
 class DetailLoanProposal(LoginRequiredMixin, DetailView):
