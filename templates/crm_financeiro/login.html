@@ -29,6 +29,7 @@
                                         <p class="mb-0">{{ message|safe }}</p>
                                     </div>
                                     {% endfor %}
+
                                     {% if form.non_field_errors %}
                                     <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
                                         {% for error in form.non_field_errors %}
@@ -40,6 +41,7 @@
                                 <div class="form-group">
                                     {{ form.username.label_tag }}
                                     {{ form.username }}
+
                                     {% if form.username.errors %}
                                     <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
                                         {% for error in form.username.errors %}
@@ -51,6 +53,7 @@
                                 <div class="form-group">
                                     {{ form.password.label_tag }}
                                     {{ form.password }}
+                                    
                                     {% if form.password.errors %}
                                     <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
                                         {% for error in form.password.errors %}

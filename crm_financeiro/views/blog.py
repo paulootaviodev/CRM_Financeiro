@@ -21,7 +21,6 @@ class ListBlogPosts(LoginRequiredMixin, ListView):
     context_object_name = "blog_posts"
     model = BlogPost
     paginate_by = 50
-    ordering = '-id'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

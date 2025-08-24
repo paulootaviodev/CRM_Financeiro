@@ -37,7 +37,10 @@
         if (errors.errors) {
             for (const [field, details] of Object.entries(errors.errors)) {
                 const errorElement = document.getElementById(`${field}-error`);
-                if (errorElement) errorElement.textContent = details[0].message;
+                if (errorElement) {
+                    errorElement.textContent = details[0].message;
+                    errorElement.className = "error-message alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3 d-block";
+                }
             }
             submitBtn.innerHTML = "Cadastrar";
         } else {

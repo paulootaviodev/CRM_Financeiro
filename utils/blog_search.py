@@ -32,4 +32,4 @@ def blog_search(params, queryset):
 
     queryset = queryset.filter(**filters)
 
-    return queryset
+    return queryset.order_by("-id")

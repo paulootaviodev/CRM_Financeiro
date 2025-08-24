@@ -1,4 +1,5 @@
 from .models import BlogPost
+from utils.resize_image import process_image
 from django import forms
 from django_summernote.widgets import SummernoteWidget
 
@@ -29,7 +30,7 @@ class BlogPostForm(forms.ModelForm):
             'id': 'featured_image',
             'name': 'featured_image',
             'placeholder': 'Imagem destacada',
-            'style': 'display: none;',
+            'style': 'opacity: 0; width: 0; padding: 0; margin: 0; height: 0; pointer-events: none',
         }),
         required=True
     )
@@ -40,3 +41,10 @@ class BlogPostForm(forms.ModelForm):
         widgets = {
             'content': SummernoteWidget(),
         }
+    
+    def clean_featured_image(self):
+        image = self.cleaned_data.get('featured_image')
+        if image:
+            image = process_image(image)
+
+        return image
