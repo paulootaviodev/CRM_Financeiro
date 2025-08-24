@@ -54,7 +54,7 @@ class BlogPost(models.Model):
         super().save(*args, **kwargs)
 
         if is_new and not self.slug:
-            self.slug = slugify(f"{self.title}-{self.created_at.strftime("%d-%m-%Y-%S")}")
+            self.slug = slugify(f"{self.title}-{self.created_at.strftime('%d-%m-%Y-%S')}")
             super().save(update_fields=["slug"])
     
     class Meta:

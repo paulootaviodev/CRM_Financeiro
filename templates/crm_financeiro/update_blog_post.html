@@ -24,6 +24,14 @@
                 </button>
                 </div>
             {% endfor %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
+                {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
             </div>
         {% endif %}
 
@@ -37,20 +45,41 @@
                         <div class="form-field-container mb-3">
                             <label for="{{ form.title.name }}" class="form-label w-100" style="text-align: left;">{{ form.title.label }}</label>
                             {{ form.title }}
-                            <span class="error-message" id="full_name-error"></span>
+                            
+                            {% if form.title.errors %}
+                            <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
+                                {% for error in form.title.errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="form-field-container mb-3">
                             <label for="{{ form.short_description.name }}" class="form-label w-100" style="text-align: left;">{{ form.short_description.label }}</label>
                             {{ form.short_description }}
-                            <span class="error-message" id="cpf-error"></span>
+                            
+                            {% if form.short_description.errors %}
+                            <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
+                                {% for error in form.short_description.errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="form-field-container mb-3 input-group align-items-start flex-column">
                             <img id="preview" src="{% if blog_post.featured_image %}{{ blog_post.featured_image.url }}{% else %}{% static 'assets/crm_financeiro/img/undraw_image-upload_7b3b.svg' %}{% endif %}" alt="Pré-visualização" class="img-thumbnail mr-3 mb-3" style="width: 300px;">
                             <label for="{{ form.featured_image.name }}" class="input-group-text btn btn-primary">{{ form.featured_image.label }}</label>
                             {{ form.featured_image }}
-                            <span class="error-message" id="featured_image-error"></span>
+                            
+                            {% if form.featured_image.errors %}
+                            <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
+                                {% for error in form.featured_image.errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
 
                             <script>
                                 document.getElementById("featured_image").addEventListener("change", function(event) {
@@ -67,7 +96,14 @@
                         <div class="form-field-container mb-3">
                             <label for="id_{{ form.content.name }}" class="form-label w-100" style="text-align: left;">{{ form.content.label }}</label>
                             {{ form.content }}
-                            <span class="error-message" id="state-error"></span>
+                            
+                            {% if form.content.errors %}
+                            <div class="alert alert-danger mt-1 pt-1 pb-1 pr-3 pl-3">
+                                {% for error in form.content.errors %}
+                                    <p class="mb-0">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <button type="submit" id="submit-form-btn" class="btn btn-primary mt-3 mb-3">Editar postagem</button>
