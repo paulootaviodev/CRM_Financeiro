@@ -4,15 +4,6 @@ def blog_search(params, queryset):
     """
     Performs a complete database search based on the fields entered in the form.
     """
-    # Search bar
-    search = params.get('search')
-    if search:
-        queryset = queryset.filter(
-            Q(title__icontains=search) |
-            Q(short_description__icontains=search) |
-            Q(content__icontains=search)
-        )
-
     # Range fields
     range_fields = {
         # Client range fields
@@ -31,5 +22,14 @@ def blog_search(params, queryset):
             filters[f'{field}__lte'] = end
 
     queryset = queryset.filter(**filters)
+
+    # Search bar
+    search = params.get('search')
+    if search:
+        queryset = queryset.filter(
+            Q(title__icontains=search) |
+            Q(short_description__icontains=search) |
+            Q(content__icontains=search)
+        )
 
     return queryset.order_by("-id")
