@@ -47,4 +47,8 @@ def format_currency(value):
     Returns:
         str: Value formatted as 'R$ X.XXX,XX' using Brazilian notation.
     """
-    return f"R$ {value:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+    value = f"{float(value):,.2f}" \
+        .replace(",", "X") \
+        .replace(".", ",") \
+        .replace("X", ".")
+    return value
