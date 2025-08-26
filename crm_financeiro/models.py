@@ -157,7 +157,7 @@ class Client(EncryptedPerson):
         super().save(*args, **kwargs)
 
         if is_new and not self.slug:
-            self.slug = slugify(f"{self.cpf_hash}-{self.client_since}")
+            self.slug = slugify(f"{self.pk}{self.cpf_hash}-{self.client_since}")
             super().save(update_fields=["slug"])
 
     class Meta:

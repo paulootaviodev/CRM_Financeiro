@@ -1,38 +1,51 @@
 from django.urls import path
 from .views import (
-    Dashboard,
-    RegisterCustomer,
+    # Authentication
     CustomLoginView,
     CustomLogoutView,
+
+    # Dashboard
+    Dashboard,
+
+    # Client
     ClientFormActionRouter,
-    ListCustomers,
     ClientCSVExportView,
-    DetailCustomer,
-    CustomerDeleteView,
     CustomerDeactivateView,
+    CustomerDeleteView,
+    DetailCustomer,
+    ListCustomers,
+    RegisterCustomer,
+    RegisterCustomerFromSimulation,
     UpdateCustomer,
-    SimulationFormActionRouter,
-    ListSimulations,
-    SimulationsCSVExportView,
+
+    # Simulations
     DetailSimulation,
+    ListSimulations,
     SimulationDeleteView,
-    ListLoanProposals,
-    LoanProposalsCSVExportView,
-    LoanProposalsFormActionRouter,
+    SimulationFormActionRouter,
+    SimulationsCSVExportView,
+
+    # Loan proposal
     CreateLoanProposal,
     DetailLoanProposal,
+    ListLoanProposals,
     LoanProposalCancellationView,
     LoanProposalPaymentView,
+    LoanProposalsCSVExportView,
+    LoanProposalsFormActionRouter,
     ReplyLoanProposalView,
     SendLoanProposalEmailView,
+
+    # Installment
+    DetailInstallment,
     InstallmentFormActionRouter,
     InstallmentsCSVExportView,
-    DetailInstallment,
     ListInstallments,
+
+    # Blog
     CreateBlogPost,
-    ListBlogPosts,
     EditBlogPost,
-    RegisterCustomerFromSimulation
+    ListBlogPosts,
 )
 
 urlpatterns = [
@@ -45,7 +58,8 @@ urlpatterns = [
 
     # Client
     path("cadastrar-cliente/", RegisterCustomer.as_view(), name="register_customer"),
-    path("cadastrar-cliente-simulacao/<slug:slug>/", RegisterCustomerFromSimulation.as_view(), name="register_customer_from_simulation"),
+    path("cadastrar-cliente-simulacao/<slug:slug>/", RegisterCustomerFromSimulation.as_view(),
+         name="register_customer_from_simulation"),
     path("listar-clientes/", ListCustomers.as_view(), name="list_customers"),
     path("exportar-clientes/", ClientCSVExportView.as_view(), name="export_customers"),
     path("cliente/<slug:slug>/", DetailCustomer.as_view(), name="detail_customer"),
