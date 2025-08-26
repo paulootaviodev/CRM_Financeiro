@@ -18,38 +18,39 @@ def process_image(image):
         raise ValidationError("A imagem não pode ultrapassar 5MB.")
 
     try:
-        img = Image.open(image).convert('RGB')
-        width, height = img.size
-        target_ratio = 16 / 9
-        current_ratio = width / height
+        with Image.open(image).convert('RGB') as img:
+            width, height = img.size
+            target_ratio = 16 / 9
+            current_ratio = width / height
 
-        if current_ratio > target_ratio:
-            # wider image → crop on the sides
-            new_width = int(height * target_ratio)
-            left = (width - new_width) // 2
-            img = img.crop((left, 0, left + new_width, height))
-        else:
-            # taller image → crop top/bottom
-            new_height = int(width / target_ratio)
-            top = (height - new_height) // 2
-            img = img.crop((0, top, width, top + new_height))
+            if current_ratio > target_ratio:
+                # wider image → crop on the sides
+                new_width = int(height * target_ratio)
+                left = (width - new_width) // 2
+                img = img.crop((left, 0, left + new_width, height))
 
-        # Resize to 1920x1080 if image is larger
-        if img.width > 1920 or img.height > 1080:
-            img = img.resize((1920, 1080), Image.Resampling.LANCZOS)
+            elif current_ratio < target_ratio:
+                # taller image → crop top/bottom
+                new_height = int(width / target_ratio)
+                top = (height - new_height) // 2
+                img = img.crop((0, top, width, top + new_height))
 
-        buffer = BytesIO()
-        img.save(buffer, format='JPEG', quality=60)
-        buffer.seek(0)
+            # Resize to 1920x1080 if image is larger
+            if img.width > 1920 or img.height > 1080:
+                img = img.resize((1920, 1080), Image.Resampling.LANCZOS)
 
-        return InMemoryUploadedFile(
-            buffer,
-            'ImageField',
-            f"{image.name.split('.')[0]}.jpg",
-            'image/jpeg',
-            buffer.getbuffer().nbytes,
-            None
-        )
+            buffer = BytesIO()
+            img.save(buffer, format='JPEG', quality=60)
+            buffer.seek(0)
 
-    except Exception:
-        raise ValidationError("Erro ao processar a imagem.")
+            return InMemoryUploadedFile(
+                buffer,
+                'ImageField',
+                f"{image.name.split('.')[0]}.jpg",
+                'image/jpeg',
+                buffer.getbuffer().nbytes,
+                None
+            )
+
+    except Exception as e:
+        raise ValidationError(f"Erro ao processar a imagem. Erro: {e}")
