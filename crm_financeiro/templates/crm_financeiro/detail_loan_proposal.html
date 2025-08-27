@@ -34,7 +34,7 @@
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold mb-1">Valor liberado:</label>
-          <div>{{ loan_proposal.released_value }}</div>
+          <div>{{ loan_proposal.released_value|format_currency }}</div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold mb-1">Quantidade de parcelas:</label>
@@ -42,7 +42,7 @@
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold mb-1">Valor das parcelas:</label>
-          <div>{{ loan_proposal.value_of_installments }}</div>
+          <div>{{ loan_proposal.value_of_installments|format_currency }}</div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold mb-1">Nome:</label>
