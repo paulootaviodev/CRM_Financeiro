@@ -81,7 +81,7 @@ class LandingPage(TemplateView):
                     # Return response
                     return JsonResponse(
                         {
-                            "success": True, "data": f"R$ {formatted_released_value}"
+                            "success": True, "data": f"{formatted_released_value}"
                             f" em {response_number_of_installments}x"
                             f" de {formatted_value_of_installments}."
                         },
