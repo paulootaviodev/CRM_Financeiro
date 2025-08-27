@@ -76,4 +76,36 @@
     </div>
   </div>
 </div>
+
+<div class="floating-buttons">
+    <a href="mailto:{{ installment.loan_proposal.client.email }}" class="btn btn-primary rounded-circle floating-btn shadow">
+        <i class="fas fa-envelope"></i>
+    </a>
+    <a href="tel:+55{{ installment.loan_proposal.client.phone }}" class="btn btn-primary rounded-circle floating-btn shadow">
+        <i class="fas fa-phone"></i>
+    </a>
+    <a href="https://wa.me/55{{ installment.loan_proposal.client.phone }}" class="btn btn-success rounded-circle floating-btn shadow" target="_blank">
+        <i class="fab fa-whatsapp fa-lg"></i>
+    </a>
+</div>
+
+<style>
+    .floating-buttons {
+        position: fixed;
+        bottom: 16px;
+        right: 76px;
+        z-index: 10;
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+    }
+    
+    .floating-btn {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
 {% endblock %}
