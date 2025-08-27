@@ -7,6 +7,7 @@ class BlogHomePage(ListView):
     model = BlogPost
     context_object_name = 'blog_posts'
     paginated_by = 5
+    ordering = '-id'
 
 
 class BlogPost(DetailView):

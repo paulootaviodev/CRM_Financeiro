@@ -44,7 +44,6 @@ class BlogPostForm(forms.ModelForm):
     
     def clean_featured_image(self):
         image = self.cleaned_data.get('featured_image')
-        if image:
-            image = process_image(image)
+        image = process_image(image) if image else None
 
         return image

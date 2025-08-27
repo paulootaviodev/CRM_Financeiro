@@ -11,49 +11,9 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from utils.cloudflare_captcha_validator import validate_turnstile
 from utils.credit_simulation_api_request import send_data_to_api
+from crm_financeiro.templatetags.custom_filters import format_currency
 
 API_URL = getenv('API_URL')
-
-
-def create_credit_simulation_lead_object(
-        form_data,
-        released_value=None,
-        number_of_installments=None,
-        value_of_installments=None,
-        api_status=None
-    ):
-    """
-    Saves a new CreditSimulationLead object to the database using form data and API results.
-    """
-    lead = CreditSimulationLead()
-
-    # Assign form values
-    lead.full_name = form_data.cleaned_data['full_name']
-    lead.cpf = form_data.cleaned_data['cpf']
-    lead.city = form_data.cleaned_data['city']
-    lead.state = form_data.cleaned_data['state']
-    lead.marital_status = form_data.cleaned_data['marital_status']
-    lead.birth_date = form_data.cleaned_data['birth_date']
-    lead.employment_status = form_data.cleaned_data['employment_status']
-    lead.phone = form_data.cleaned_data['phone']
-    lead.email = form_data.cleaned_data['email']
-    lead.privacy_policy = form_data.cleaned_data['privacy_policy']
-
-    # Assign API response values or defaults
-    lead.released_value = released_value or 0
-    lead.number_of_installments = number_of_installments or 0
-    lead.value_of_installments = value_of_installments or 0
-    lead.api_status = api_status or 500
-    
-    lead.save()
-
-
-def format_currency(value):
-    value = f"{float(value):,.2f}" \
-        .replace(",", "X") \
-        .replace(".", ",") \
-        .replace("X", ".")
-    return value
 
 
 class LandingPage(TemplateView):
@@ -88,18 +48,12 @@ class LandingPage(TemplateView):
         if form.is_valid():
             try:
                 # Prepare payload with cleaned form data
-                payload = {
-                    "full_name": form.cleaned_data["full_name"],
-                    "cpf": form.cleaned_data["cpf"],
-                    "city": form.cleaned_data["city"],
-                    "state": form.cleaned_data["state"],
-                    "marital_status": form.cleaned_data["marital_status"],
-                    "birth_date": form.cleaned_data["birth_date"],
-                    "employment_status": form.cleaned_data["employment_status"],
-                    "phone": form.cleaned_data["phone"],
-                    "email": form.cleaned_data["email"],
-                    "privacy_policy": form.cleaned_data["privacy_policy"],
-                }
+                fields = [
+                    "full_name", "cpf", "city", "state", "marital_status", "birth_date",
+                    "employment_status", "phone", "email", "privacy_policy"
+                ]
+                payload = {field: form.cleaned_data[field] for field in fields}
+                
                 # Make the API request
                 response = send_data_to_api(payload, API_URL)
                 http_status_code = response.status_code
@@ -112,12 +66,12 @@ class LandingPage(TemplateView):
                     response_value_of_installments = response_data.get('value_of_installments', 0.00)
 
                     # Saves encrypted data to the database
-                    create_credit_simulation_lead_object(
+                    self.create_credit_simulation_lead_object(
                         form,
                         response_released_value,
                         response_number_of_installments,
                         response_value_of_installments,
-                        api_status=http_status_code
+                        http_status_code
                     )
 
                     # Format Brazilian currency output
@@ -135,7 +89,7 @@ class LandingPage(TemplateView):
                     )
                 # If the API returns error
                 else:
-                    create_credit_simulation_lead_object(form, api_status=http_status_code)
+                    self.create_credit_simulation_lead_object(form, api_status=http_status_code)
                     return JsonResponse({"success": False}, status=http_status_code)
             
             # API call or response parsing failed
@@ -146,3 +100,34 @@ class LandingPage(TemplateView):
         else:
             errors = form.errors.get_json_data()
             return JsonResponse({"success": False, "errors": errors}, status=400)
+
+    @staticmethod
+    def create_credit_simulation_lead_object(
+            form_data,
+            released_value=None,
+            number_of_installments=None,
+            value_of_installments=None,
+            api_status=None
+        ) -> None:
+        """
+        Saves a new CreditSimulationLead object to the database using form data and API results.
+        """
+        lead = CreditSimulationLead()
+
+        # List of form fields that will be assigned to the lead
+        form_fields = [
+            'full_name', 'cpf', 'city', 'state', 'marital_status', 'birth_date',
+            'employment_status', 'phone', 'email', 'privacy_policy'
+        ]
+
+        # Assign form fields to the lead
+        for field in form_fields:
+            setattr(lead, field, form_data.cleaned_data[field])
+
+        # Assign API values ​​or defaults
+        lead.released_value = released_value or 0
+        lead.number_of_installments = number_of_installments or 0
+        lead.value_of_installments = value_of_installments or 0
+        lead.api_status = api_status or 500
+
+        lead.save()
