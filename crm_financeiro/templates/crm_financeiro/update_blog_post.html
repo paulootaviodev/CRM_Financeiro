@@ -69,7 +69,7 @@
                         </div>
 
                         <div class="form-field-container mb-3 input-group align-items-start flex-column">
-                            <img id="preview" src="{% if blog_post.featured_image %}{{ blog_post.featured_image.url }}{% else %}{% static 'assets/crm_financeiro/img/undraw_image-upload_7b3b.svg' %}{% endif %}" alt="Pré-visualização" class="img-thumbnail mr-3 mb-3" style="width: 300px;">
+                            <img id="preview" src="{% if blog_post.featured_image %}{{ blog_post.featured_image.url }}{% else %}{% static 'crm_financeiro/img/undraw_image-upload_7b3b.svg' %}{% endif %}" alt="Pré-visualização" class="img-thumbnail mr-3 mb-3" style="width: 300px;">
                             <label for="{{ form.featured_image.name }}" class="input-group-text btn btn-primary">{{ form.featured_image.label }}</label>
                             {{ form.featured_image }}
                             
