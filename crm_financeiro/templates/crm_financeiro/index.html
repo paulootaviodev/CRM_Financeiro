@@ -7,6 +7,7 @@
 {% block code %}
 <script src="{% static 'crm_financeiro/vendor/chart.js/Chart.min.js' %}" type="text/javascript" defer></script>
 <script src="{% static 'crm_financeiro/js/sales-chart.js' %}" type="text/javascript" defer></script>
+<script src="{% static 'crm_financeiro/js/views-chart.js' %}" type="text/javascript" defer></script>
 <script src="{% static 'crm_financeiro/js/installment-chart.js' %}" type="text/javascript" defer></script>
 {% endblock %}
 
@@ -164,6 +165,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Area Chart -->
+            <div class="col-xl-8 col-lg-7">
+                <div class="card shadow mb-4">
+                    <!-- Card Header - Dropdown -->
+                    <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Visualizações no blog (últimos 12 meses)</h6>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="myAreaChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!-- /.container-fluid -->
@@ -178,15 +196,22 @@
     var unpaid = {{ unpaid|safe }};
     var upcoming = {{ upcoming|safe }}
 
+    var views_labels = {{ views_labels|safe }};
+    var views = {{ views|safe }};
+
     window.onload = function() {
         salesChart.data.labels = labels;
         salesChart.data.datasets[1].data = sales_values;
         salesChart.data.datasets[0].data = profit_values;
 
         installmentChart.data.datasets[0].data = [paid, unpaid, upcoming];
+
+        viewsChart.data.labels = views_labels;
+        viewsChart.data.datasets[0].data = views;
         
         salesChart.update();
         installmentChart.update();
+        viewsChart.update();
     };
 </script>
 {% endblock %}

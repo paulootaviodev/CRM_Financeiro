@@ -67,3 +67,29 @@ class BlogPost(models.Model):
     class Meta:
         verbose_name = "Postagem do blog"
         verbose_name_plural = "Postagens do blog"
+
+
+class ViewsPerMonth(models.Model):
+    post = models.ForeignKey(
+        BlogPost,
+        on_delete=models.CASCADE,
+        verbose_name="Postagem",
+        **NON_EDITABLE_FIELD_KWARGS
+    )
+    month = models.DateField(
+        **NON_EDITABLE_FIELD_KWARGS,
+        verbose_name="Mês"
+    )
+    total = models.PositiveIntegerField(
+        default=0,
+        editable=True,
+        blank=True,
+        null=False,
+        verbose_name="Total"
+    )
+
+    class Meta:
+        unique_together = ('post', 'month')
+
+    def __str__(self):
+        return f"{self.post.title} - {self.month.strftime('%m/%Y')}: {self.total}"
