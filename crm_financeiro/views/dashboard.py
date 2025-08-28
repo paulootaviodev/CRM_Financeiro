@@ -8,6 +8,7 @@ from django.db.models import Count, Q
 import locale
 
 from ..models import LoanProposal, Installment
+from blog.models import ViewsPerMonth
 
 # Set locale to Brazilian Portuguese for month name formatting
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
@@ -108,6 +109,36 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             'paid': counts['paid'],
             'unpaid': counts['unpaid'],
             'upcoming': counts['upcoming']
+        })
+
+        # Add blog views
+        labels = []
+        views = []
+
+        blog_views = ViewsPerMonth.objects.order_by('-id')
+
+        for i in range(11, -1, -1):
+            ref_date = today - timedelta(days=30 * i)
+            month = ref_date.month
+            year = ref_date.year
+
+            monthly_data = blog_views.filter(
+                month__month=month,
+                month__year=year
+            ).aggregate(
+                total_views=Sum('total')
+            )
+
+            total_views = monthly_data['total_views'] or 0
+
+            month_label = ref_date.strftime('%b').capitalize()
+            labels.append(month_label)
+            views.append(int(total_views))
+
+        # Add historical data to context
+        context.update({
+            'views_labels': labels,
+            'views': views
         })
 
         return context

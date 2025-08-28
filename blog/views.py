@@ -1,7 +1,8 @@
-from .models import BlogPost
+from .models import BlogPost, ViewsPerMonth
 from django.views.generic import ListView, DetailView, TemplateView
 from django.http import JsonResponse
 from utils.request_rate_limit import rate_limited_view
+from django.utils import timezone
 
 
 class BlogHomePage(ListView):
@@ -28,6 +29,16 @@ class BlogPost(DetailView):
         blog_post = self.get_object()
         blog_post.views += 1
         blog_post.save(update_fields=["views"])
+
+        current_month = timezone.now().replace(day=1)
+
+        views, _ = ViewsPerMonth.objects.get_or_create(
+            post=blog_post,
+            month=current_month
+        )
+        views.total += 1
+        views.save(update_fields=["total"])
+
         return JsonResponse({"success": True}, status=200)
 
 
