@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from blog.forms import BlogPostForm
 from blog.models import BlogPost
 from ..forms import BlogPostFilterForm
@@ -13,7 +14,8 @@ class CreateBlogPost(LoginRequiredMixin, CreateView):
     form_class = BlogPostForm
 
     def get_success_url(self):
-        return reverse("list_blog_posts")
+        messages.success(self.request, "Postagem criada com sucesso.")
+        return reverse("update_blog_post", kwargs={"slug": self.object.slug})
 
 
 class ListBlogPosts(LoginRequiredMixin, ListView):
@@ -48,4 +50,5 @@ class EditBlogPost(LoginRequiredMixin, UpdateView):
     slug_url_kwarg = "slug"
 
     def get_success_url(self):
-        return reverse("list_blog_posts")
+        messages.success(self.request, "Postagem editada com sucesso.")
+        return reverse("update_blog_post", kwargs={"slug": self.object.slug})
