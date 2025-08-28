@@ -32,6 +32,13 @@ class BlogPost(models.Model):
         null=False,
         verbose_name="Slug"
     )
+    views = models.PositiveIntegerField(
+        default=0,
+        editable=True,
+        blank=True,
+        null=False,
+        verbose_name="Visualizações"
+    )
     created_at = models.DateTimeField(
         **NON_EDITABLE_FIELD_KWARGS,
         auto_now_add=True,

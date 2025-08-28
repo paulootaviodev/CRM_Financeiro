@@ -1,5 +1,6 @@
 from .models import BlogPost
 from django.views.generic import ListView, DetailView, TemplateView
+from django.http import JsonResponse
 
 
 class BlogHomePage(ListView):
@@ -16,6 +17,12 @@ class BlogPost(DetailView):
     context_object_name = 'blog_post'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def post(self, request, *args, **kwargs):
+        blog_post = self.get_object()
+        blog_post.views += 1
+        blog_post.save(update_fields=["views"])
+        return JsonResponse(status=200)
 
 
 class BlogAbout(TemplateView):

@@ -6,6 +6,7 @@
 {% block content %}
 <!-- Page Header-->
 <header class="masthead" style="background-image: url({{ blog_post.featured_image.url }})">
+    {% csrf_token %}
     <div class="container position-relative px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
@@ -32,4 +33,29 @@
         </div>
     </div>
 </article>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: ''
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error('Error registering view:', response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Request error:', error);
+            });
+        }, 3000);
+    });
+</script>
 {% endblock %}
