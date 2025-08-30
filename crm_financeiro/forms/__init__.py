@@ -5,6 +5,12 @@ from .installment import InstallmentFilterForm
 from .loan_proposal import LoanProposalFilterForm
 from .login import CustomLoginForm
 from .simulation import SimulationFilterForm
+from .users import (
+    UserRegisterForm,
+    UserFilterForm,
+    UserUpdateForm,
+    ChangePasswordForm
+)
 
 __all__ = [
     BlogPostFilterForm,
@@ -14,5 +20,9 @@ __all__ = [
     InstallmentFilterForm,
     LoanProposalFilterForm,
     CustomLoginForm,
-    SimulationFilterForm
+    SimulationFilterForm,
+    UserRegisterForm,
+    UserFilterForm,
+    UserUpdateForm,
+    ChangePasswordForm
 ]
