@@ -5,6 +5,34 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from .user_fields import UserFieldsMixin
 
+def translate_permission(perm):
+    model_meta = perm.content_type.model_class()._meta
+    model_verbose_name = model_meta.verbose_name
+
+    app_config = apps.get_app_config(perm.content_type.app_label)
+    app_verbose_name = app_config.verbose_name
+
+    # Extracts the action and model name from perm.name
+    # Example: "Can add views per month" -> action="add", model="views per month"
+    parts = perm.name.split(' ', 2)
+    if len(parts) >= 2 and parts[0] == 'Can':
+        action = parts[1]
+        # Translates the action
+        action_translations = {
+            'add': _('Pode adicionar'),
+            'change': _('Pode alterar'),
+            'delete': _('Pode excluir'),
+            'view': _('Pode visualizar'),
+        }
+        translated_action = action_translations.get(action, _(action))
+        # Match the translated action with the verbose_name of the model
+        translated_permission_name = f'{translated_action} {model_verbose_name}'
+    else:
+        # Fallback to the original translated name
+        translated_permission_name = _(perm.name)
+
+    return f'{app_verbose_name} | {translated_permission_name}'
+
 
 class UserRegisterForm(UserFieldsMixin, UserCreationForm):
     class Meta:
@@ -16,35 +44,7 @@ class UserRegisterForm(UserFieldsMixin, UserCreationForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user_permissions'].label_from_instance = self.translate_permission
-
-    def translate_permission(self, perm):
-        model_meta = perm.content_type.model_class()._meta
-        model_verbose_name = model_meta.verbose_name
-
-        app_config = apps.get_app_config(perm.content_type.app_label)
-        app_verbose_name = app_config.verbose_name
-
-        # Extracts the action and model name from perm.name
-        # Example: "Can add views per month" -> action="add", model="views per month"
-        parts = perm.name.split(' ', 2)
-        if len(parts) >= 2 and parts[0] == 'Can':
-            action = parts[1]
-            # Translates the action
-            action_translations = {
-                'add': _('Pode adicionar'),
-                'change': _('Pode alterar'),
-                'delete': _('Pode excluir'),
-                'view': _('Pode visualizar'),
-            }
-            translated_action = action_translations.get(action, _(action))
-            # Match the translated action with the verbose_name of the model
-            translated_permission_name = f'{translated_action} {model_verbose_name}'
-        else:
-            # Fallback to the original translated name
-            translated_permission_name = _(perm.name)
-
-        return f'{app_verbose_name} | {translated_permission_name}'
+        self.fields['user_permissions'].label_from_instance = translate_permission
 
 
 class UserFilterForm(forms.Form):
@@ -99,6 +99,7 @@ class UserFilterForm(forms.Form):
             'type': 'date'
         })
     )
+    
 
     class Meta:
         fields = [
@@ -110,8 +111,10 @@ class UserFilterForm(forms.Form):
 class UserUpdateForm(UserFieldsMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['user_permissions'].label_from_instance = translate_permission
         self.fields.pop('password1', None)
         self.fields.pop('password2', None)
+
 
     class Meta:
         model = User
@@ -129,6 +132,7 @@ class ChangePasswordForm(UserFieldsMixin, forms.Form):
         del self.fields['is_superuser']
         del self.fields['groups']
         del self.fields['user_permissions']
+
     
     class Meta:
         fields = [

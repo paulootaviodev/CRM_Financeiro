@@ -2,6 +2,7 @@ from ..models import Installment
 from django.http import HttpResponse
 from django.views.generic import View, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from ..forms import InstallmentFilterForm
 from utils.search_queryset import search
 from django.utils.timezone import now
@@ -44,6 +45,11 @@ class ListInstallments(LoginRequiredMixin, ListView):
         
         # Return empty queryset if no search input
         return self.model.objects.none()
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_installment'):
+            raise PermissionDenied("Você não tem permissão para visualizar parcelas.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class InstallmentsCSVExportView(LoginRequiredMixin, View):
@@ -83,6 +89,11 @@ class InstallmentsCSVExportView(LoginRequiredMixin, View):
         base_queryset = Installment.objects.all()
         return search(self.request.GET, base_queryset, 'loan_proposal__client')
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_installment'):
+            raise PermissionDenied("Você não tem permissão para visualizar parcelas.")
+        return super().dispatch(request, *args, **kwargs)
+
 
 class DetailInstallment(LoginRequiredMixin, DetailView):
     template_name = "crm_financeiro/detail_installments.html"
@@ -90,3 +101,8 @@ class DetailInstallment(LoginRequiredMixin, DetailView):
     context_object_name = 'installment'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_installment'):
+            raise PermissionDenied("Você não tem permissão para visualizar parcelas.")
+        return super().dispatch(request, *args, **kwargs)

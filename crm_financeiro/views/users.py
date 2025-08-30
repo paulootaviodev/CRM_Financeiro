@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from crm_financeiro.forms.users import UserRegisterForm, UserFilterForm, UserUpdateForm
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.views.generic import View, UpdateView, ListView, DetailView, DeleteView
 from django.utils.timezone import now
 from utils.user_search import user_search
@@ -32,6 +33,11 @@ class RegisterUserView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         messages.success(self.request, "Usuário criado com sucesso.")
         return reverse('detail_user', kwargs={"username": self.object.username})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.add_user'):
+            raise PermissionDenied("Você não tem permissão para criar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserFormActionRouter(LoginRequiredMixin, View):
@@ -67,6 +73,11 @@ class ListUsers(LoginRequiredMixin, ListView):
         
         # Return empty queryset if no search input
         return self.model.objects.none()
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.view_user'):
+            raise PermissionDenied("Você não tem permissão para visualizar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UsersCSVExportView(LoginRequiredMixin, View):
@@ -97,6 +108,11 @@ class UsersCSVExportView(LoginRequiredMixin, View):
     def get_queryset(self):
         base_queryset = User.objects.all()
         return user_search(self.request.GET, base_queryset)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.view_user'):
+            raise PermissionDenied("Você não tem permissão para visualizar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DetailUser(LoginRequiredMixin, DetailView):
@@ -105,6 +121,11 @@ class DetailUser(LoginRequiredMixin, DetailView):
     context_object_name = 'user'
     slug_field = 'username'
     slug_url_kwarg = 'username'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.view_user'):
+            raise PermissionDenied("Você não tem permissão para visualizar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UpdateUser(LoginRequiredMixin, UpdateView):
@@ -124,6 +145,11 @@ class UpdateUser(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Usuário atualizado com sucesso.")
         return reverse('detail_user', kwargs={"username": self.object.username})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.change_user'):
+            raise PermissionDenied("Você não tem permissão para editar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DeleteUser(LoginRequiredMixin, DeleteView):
@@ -135,25 +161,27 @@ class DeleteUser(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         messages.success(self.request, "Usuário excluido com sucesso.")
         return reverse('list_users')
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.delete_user'):
+            raise PermissionDenied("Você não tem permissão para excluir usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
-class ChangePasswordView(UserPassesTestMixin, FormView):
+class ChangePasswordView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = 'crm_financeiro/change_user_password.html'
     form_class = ChangePasswordForm
 
     def get_success_url(self):
         return reverse('change_user_password')
 
-    # Restringe acesso a superusuários
     def test_func(self):
         return self.request.user.is_superuser
 
-    # Redireciona para login se o teste falhar
     def handle_no_permission(self):
         messages.error(self.request, "Apenas administradores podem acessar esta página.")
         return super().handle_no_permission()
 
-    # Processa o formulário válido
     def form_valid(self, form):
         username = form.cleaned_data['username']
         new_password = form.cleaned_data['password1']
@@ -163,7 +191,11 @@ class ChangePasswordView(UserPassesTestMixin, FormView):
         messages.success(self.request, f'Senha do usuário {username} alterada com sucesso!')
         return super().form_valid(form)
 
-    # Adiciona mensagens de erro se o formulário for inválido
     def form_invalid(self, form):
         messages.error(self.request, 'Erro ao alterar a senha. Verifique os dados.')
         return super().form_invalid(form)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('auth.change_user'):
+            raise PermissionDenied("Você não tem permissão para editar usuários.")
+        return super().dispatch(request, *args, **kwargs)

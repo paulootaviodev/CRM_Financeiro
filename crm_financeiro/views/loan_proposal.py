@@ -4,6 +4,7 @@ from ..models import Client, LoanProposal, Installment
 from django.http import HttpResponse
 from django.views.generic import View, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from ..models import LoanProposal
 from ..forms import LoanProposalFilterForm
 from utils.search_queryset import search
@@ -97,6 +98,11 @@ class CreateLoanProposal(LoginRequiredMixin, View):
 
         messages.success(request, "Proposta gerada com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={'slug': loan_proposal.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.add_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para criar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoanProposalsFormActionRouter(LoginRequiredMixin, View):
@@ -132,6 +138,11 @@ class ListLoanProposals(LoginRequiredMixin, ListView):
         
         # Return empty queryset if no search input
         return self.model.objects.none()
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para visualizar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoanProposalsCSVExportView(LoginRequiredMixin, View):
@@ -170,6 +181,11 @@ class LoanProposalsCSVExportView(LoginRequiredMixin, View):
     def get_queryset(self):
         base_queryset = LoanProposal.objects.all()
         return search(self.request.GET, base_queryset, 'client')
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para visualizar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DetailLoanProposal(LoginRequiredMixin, DetailView):
@@ -178,6 +194,11 @@ class DetailLoanProposal(LoginRequiredMixin, DetailView):
     context_object_name = 'loan_proposal'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para visualizar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoanProposalCancellationView(LoginRequiredMixin, View):
@@ -193,6 +214,11 @@ class LoanProposalCancellationView(LoginRequiredMixin, View):
 
         messages.success(request, "Proposta cancelada com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={"slug": loan_proposal.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.change_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para editar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class LoanProposalPaymentView(LoginRequiredMixin, View):
@@ -205,6 +231,11 @@ class LoanProposalPaymentView(LoginRequiredMixin, View):
 
         messages.success(request, "Proposta paga com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={"slug": loan_proposal.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.change_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para editar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SendLoanProposalEmailView(LoginRequiredMixin, View):
@@ -216,6 +247,11 @@ class SendLoanProposalEmailView(LoginRequiredMixin, View):
 
         messages.success(request, "Proposta enviada com sucesso.")
         return redirect(reverse('detail_loan_proposal', kwargs={"slug": loan_proposal.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.change_loanproposal'):
+            raise PermissionDenied("Você não tem permissão para editar propostas de empréstimo.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ReplyLoanProposalView(View):

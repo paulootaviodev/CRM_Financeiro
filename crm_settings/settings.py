@@ -202,6 +202,7 @@ SUMMERNOTE_CONFIG = {
             ['view', ['fullscreen', 'codeview', 'help']],
         ],
     },
+    'attachment_require_authentication': True
 }
 
 SUMMERNOTE_THEME = 'bs4'

@@ -79,7 +79,14 @@ class UserFieldsMixin:
             widget=forms.CheckboxSelectMultiple()
         )
         self.fields['user_permissions'] = forms.ModelMultipleChoiceField(
-            queryset=Permission.objects.all(),
+            queryset=Permission.objects.filter(
+                content_type__app_label__in=[
+                    'auth',
+                    'blog',
+                    'crm_financeiro',
+                    'landing_page'
+                ]
+            ),
             label="Permissões:",
             widget=forms.CheckboxSelectMultiple()
         )
