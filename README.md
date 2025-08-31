@@ -8,8 +8,6 @@ This project provides a robust foundation for developers looking to build a **Cu
 
 ## Features
 
-<custom-element data-json="%7B%22type%22%3A%22table-metadata%22%2C%22attributes%22%3A%7B%22title%22%3A%22Features%22%7D%7D" />
-
 | Feature                | Description                                      |
 |------------------------|--------------------------------------------------|
 | **Landing Page**       | Simulate credit offers for potential clients.    |
