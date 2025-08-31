@@ -90,6 +90,8 @@ class ViewsPerMonth(models.Model):
 
     class Meta:
         unique_together = ('post', 'month')
+        verbose_name = 'Visualização por mês'
+        verbose_name_plural = 'Visualizações por mês'
 
     def __str__(self):
         return f"{self.post.title} - {self.month.strftime('%m/%Y')}: {self.total}"

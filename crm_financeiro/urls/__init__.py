@@ -8,6 +8,7 @@ from .simulations import urlpatterns as simulations_urls
 from .loan_proposal import urlpatterns as loan_proposal_urls
 from .installment import urlpatterns as installment_urls
 from .blog import urlpatterns as blog_urls
+from .users import urlpatterns as users_urls
 
 # Combine all URL patterns into a single list
 urlpatterns = [
@@ -17,7 +18,8 @@ urlpatterns = [
     path('simulations/', include((simulations_urls))),
     path('proposals/', include((loan_proposal_urls))),
     path('installments/', include((installment_urls))),
-    path('blog/', include((blog_urls)))
+    path('blog/', include((blog_urls))),
+    path('users/', include((users_urls))),
 ]
 
 # Explicitly define what is exported when someone uses `from crm_financeiro.urls import *`
@@ -29,5 +31,6 @@ __all__ = [
     'loan_proposal_urls',
     'installment_urls',
     'blog_urls',
+    'users_urls',
     'urlpatterns'  # Also export the combined urlpatterns for direct use
 ]

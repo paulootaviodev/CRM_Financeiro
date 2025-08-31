@@ -3,6 +3,7 @@ from utils.search_queryset import search
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.utils.timezone import now
@@ -47,6 +48,11 @@ class ListSimulations(LoginRequiredMixin, ListView):
 
         # Return empty queryset if no search input
         return self.model.objects.none()
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('landing_page.view_creditsimulationlead'):
+            raise PermissionDenied("Você não tem permissão para visualizar simulações de crédito.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class SimulationsCSVExportView(LoginRequiredMixin, View):
@@ -85,6 +91,11 @@ class SimulationsCSVExportView(LoginRequiredMixin, View):
     def get_queryset(self):
         base_queryset = CreditSimulationLead.objects.all()
         return search(self.request.GET, base_queryset)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('landing_page.view_creditsimulationlead'):
+            raise PermissionDenied("Você não tem permissão para visualizar simulações de crédito.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class DetailSimulation(LoginRequiredMixin, DetailView):
@@ -94,6 +105,11 @@ class DetailSimulation(LoginRequiredMixin, DetailView):
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('landing_page.view_creditsimulationlead'):
+            raise PermissionDenied("Você não tem permissão para visualizar simulações de crédito.")
+        return super().dispatch(request, *args, **kwargs)
+
 
 class SimulationDeleteView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -102,3 +118,8 @@ class SimulationDeleteView(LoginRequiredMixin, View):
 
         messages.success(request, "Simulação deletada com sucesso.")
         return redirect(reverse('list_simulations'))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('landing_page.delete_creditsimulationlead'):
+            raise PermissionDenied("Você não tem permissão para excluir simulações de crédito.")
+        return super().dispatch(request, *args, **kwargs)

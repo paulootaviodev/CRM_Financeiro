@@ -153,12 +153,6 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'blog' / 'static',
-    BASE_DIR / 'crm_financeiro' / 'static',
-    BASE_DIR / 'landing_page' / 'static'
-]
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -202,6 +196,7 @@ SUMMERNOTE_CONFIG = {
             ['view', ['fullscreen', 'codeview', 'help']],
         ],
     },
+    'attachment_require_authentication': True
 }
 
 SUMMERNOTE_THEME = 'bs4'

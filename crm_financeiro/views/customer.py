@@ -4,6 +4,7 @@ from utils.search_queryset import search
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from ..models import Client, Installment
 from landing_page.models import CreditSimulationLead
 from django.views.generic import TemplateView, ListView, DetailView, View
@@ -35,6 +36,11 @@ class RegisterCustomerFromSimulation(LoginRequiredMixin, View):
 
         messages.success(request, "Cliente cadastrado com sucesso.")
         return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.add_client'):
+            raise PermissionDenied("Você não tem permissão para registrar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class RegisterCustomer(LoginRequiredMixin, TemplateView):
@@ -56,7 +62,12 @@ class RegisterCustomer(LoginRequiredMixin, TemplateView):
             return JsonResponse({"success": True, "redirect_url": detail_url}, status=200)
         else:
             errors = form.errors.get_json_data()
-            return JsonResponse({"success": False, "errors": errors}, status=400)    
+            return JsonResponse({"success": False, "errors": errors}, status=400)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.add_client'):
+            raise PermissionDenied("Você não tem permissão para registrar usuários.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ClientFormActionRouter(LoginRequiredMixin, View):
@@ -92,6 +103,11 @@ class ListCustomers(LoginRequiredMixin, ListView):
         
         # Return empty queryset if no search input
         return self.model.objects.none()
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_client'):
+            raise PermissionDenied("Você não tem permissão para visualizar clientes.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ClientCSVExportView(LoginRequiredMixin, View):
@@ -131,6 +147,11 @@ class ClientCSVExportView(LoginRequiredMixin, View):
         base_queryset = Client.objects.all()
         return search(self.request.GET, base_queryset)
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_client'):
+            raise PermissionDenied("Você não tem permissão para visualizar clientes.")
+        return super().dispatch(request, *args, **kwargs)
+
 
 class DetailCustomer(LoginRequiredMixin, DetailView):
     template_name = "crm_financeiro/detail_customer.html"
@@ -138,6 +159,11 @@ class DetailCustomer(LoginRequiredMixin, DetailView):
     context_object_name = 'client'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.view_client'):
+            raise PermissionDenied("Você não tem permissão para visualizar clientes.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UpdateCustomer(LoginRequiredMixin, TemplateView):
@@ -168,6 +194,11 @@ class UpdateCustomer(LoginRequiredMixin, TemplateView):
         else:
             errors = form.errors.get_json_data()
             return JsonResponse({"success": False, "errors": errors}, status=400)
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.change_client'):
+            raise PermissionDenied("Você não tem permissão para editar clientes.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CustomerDeleteView(LoginRequiredMixin, View):
@@ -198,6 +229,11 @@ class CustomerDeleteView(LoginRequiredMixin, View):
             
         client.save()
         return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.delete_client'):
+            raise PermissionDenied("Você não tem permissão para excluir clientes.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CustomerDeactivateView(LoginRequiredMixin, View):
@@ -232,3 +268,8 @@ class CustomerDeactivateView(LoginRequiredMixin, View):
             messages.success(request, "Cliente desativado com sucesso.")
 
         return redirect(reverse('detail_customer', kwargs={"slug": client.slug}))
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('crm_financeiro.delete_client'):
+            raise PermissionDenied("Você não tem permissão para desativar clientes.")
+        return super().dispatch(request, *args, **kwargs)

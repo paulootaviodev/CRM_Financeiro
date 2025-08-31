@@ -1,0 +1,120 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+
+{% block users_active %}active{% endblock %}
+
+{% block content %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Usuários</h1>
+
+    {% if messages %}
+        <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="get" action="{% url 'user_action_router' %}" class="row g-3 mb-4">
+        <!-- Barra de pesquisa -->
+        <div class="col-md-12 mb-3">
+            <label for="search" class="form-label" style="text-align: left;">Pesquisa:</label>
+            <input type="text" name="search" class="form-control" placeholder="Pesquisar por nome de usuário ou email." value="{{ request.GET.search }}">
+        </div>
+
+        <!-- Filtros individuais -->
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.date_joined_initial.name }}" class="form-label" style="text-align: left;">{{ form.date_joined_initial.label }}</label>
+            {{ form.date_joined_initial }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.date_joined_final.name }}" class="form-label" style="text-align: left;">{{ form.date_joined_final.label }}</label>
+            {{ form.date_joined_final }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.is_active.name }}" class="form-label" style="text-align: left;">{{ form.is_active.label }}</label>
+            {{ form.is_active }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.is_staff.name }}" class="form-label" style="text-align: left;">{{ form.is_staff.label }}</label>
+            {{ form.is_staff }}
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.is_superuser.name }}" class="form-label" style="text-align: left;">{{ form.is_superuser.label }}</label>
+            {{ form.is_superuser }}
+        </div>
+
+        <!-- Botão de filtro -->
+        <div class="col-md-12">
+            <button type="submit" name="action" value="filter" class="btn btn-primary">Filtrar</button>
+            <button type="submit" name="action" value="export" class="btn btn-primary">Exportar CSV</button>
+        </div>
+    </form>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            {% if users|length == 1 %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ users|length }} usuário</h6>
+            {% else %}
+            <h6 class="m-0 font-weight-bold text-primary">Mostrando {{ users|length }} usuários</h6>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nome de usuário</th>
+                            <th>E-mail</th>
+                            <th>É da equipe</th>
+                            <th>É administrador</th>
+                            <th>Está ativo</th>
+                            <th>Data criado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td><a href="{% url 'detail_user' user.username %}">{{ user.username }}</a></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.is_staff|yesno:"Sim,Não" }}</td>
+                            <td>{{ user.is_superuser|yesno:"Sim,Não" }}</td>
+                            <td>{{ user.is_active|yesno:"Sim,Não" }}</td>
+                            <td>{{ user.date_joined }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <div class="pagination mb-4">
+        {% if page_obj.has_previous %}
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-primary text-uppercase" href="{% querystring page=page_obj.previous_page_number %}">← Página anterior</a>
+            </div>
+        {% endif %}
+
+        <span class="mr-2 ml-2 p-2">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-primary text-uppercase" href="{% querystring page=page_obj.next_page_number %}">Próxima página →</a>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+<!-- /.container-fluid -->
+{% endblock %}

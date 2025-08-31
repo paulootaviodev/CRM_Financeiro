@@ -11,6 +11,15 @@ from .loan_proposal import LoanProposalPaymentView, ReplyLoanProposalView, SendL
 from .installments import InstallmentFormActionRouter, InstallmentsCSVExportView
 from .installments import DetailInstallment, ListInstallments
 from .blog import CreateBlogPost, ListBlogPosts, EditBlogPost
+from .users import (
+    RegisterUserView,
+    UserFormActionRouter,
+    ListUsers,
+    UsersCSVExportView,
+    DetailUser,
+    DeleteUser,
+    ChangePasswordView
+)
 
 __all__ = [
     "CustomLoginView",
@@ -45,5 +54,12 @@ __all__ = [
     "CreateBlogPost",
     "ListBlogPosts",
     "EditBlogPost",
-    "RegisterCustomerFromSimulation"
+    "RegisterCustomerFromSimulation",
+    "RegisterUserView",
+    "UserFormActionRouter",
+    "ListUsers",
+    "UsersCSVExportView",
+    "DetailUser",
+    "DeleteUser",
+    "ChangePasswordView"
 ]

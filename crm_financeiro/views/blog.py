@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from blog.forms import BlogPostForm
 from blog.models import BlogPost
 from ..forms import BlogPostFilterForm
@@ -16,6 +17,11 @@ class CreateBlogPost(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         messages.success(self.request, "Postagem criada com sucesso.")
         return reverse("update_blog_post", kwargs={"slug": self.object.slug})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('blog.add_blogpost'):
+            raise PermissionDenied("Você não tem permissão para criar postagens.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ListBlogPosts(LoginRequiredMixin, ListView):
@@ -39,6 +45,11 @@ class ListBlogPosts(LoginRequiredMixin, ListView):
         
         # Return empty queryset if no search input
         return self.model.objects.none()
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('blog.view_blogpost'):
+            raise PermissionDenied("Você não tem permissão para visualizar postagens.")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EditBlogPost(LoginRequiredMixin, UpdateView):
@@ -52,3 +63,8 @@ class EditBlogPost(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Postagem editada com sucesso.")
         return reverse("update_blog_post", kwargs={"slug": self.object.slug})
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('blog.change_blogpost'):
+            raise PermissionDenied("Você não tem permissão para editar postagens.")
+        return super().dispatch(request, *args, **kwargs)

@@ -1,0 +1,47 @@
+{% extends 'crm_financeiro/_partials/base.html' %}
+{% load static %}
+
+{% block users_active %}active{% endblock %}
+
+{% block content %}
+<div id="content">
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Excluir Usuário</h1>
+        </div>
+
+        {% if messages %}
+            <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Content Row -->
+        <div class="row">
+            <div class="container">
+                <div class="form-container">
+                    <form action="#" method="post" autocomplete="off">
+                        {% csrf_token %}
+
+                        <h3>Tem certeza que deseja excluir esse usuário?</h3>
+
+                        <button type="submit" id="submit-form-btn" class="btn btn-primary mt-3 mb-3">Excluir usuário</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+</div>
+{% endblock %}
