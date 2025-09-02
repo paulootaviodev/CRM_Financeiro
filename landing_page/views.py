@@ -1,3 +1,4 @@
+from datetime import date
 from os import getenv
 
 from json import JSONDecodeError
@@ -52,7 +53,14 @@ class LandingPage(TemplateView):
                     "full_name", "cpf", "city", "state", "marital_status", "birth_date",
                     "employment_status", "phone", "email", "privacy_policy"
                 ]
-                payload = {field: form.cleaned_data[field] for field in fields}
+                payload = {}
+                for field in fields:
+                    value = form.cleaned_data[field]
+                    # Convert date objects to ISO 8601 strings
+                    if isinstance(value, date):
+                        payload[field] = value.isoformat()
+                    else:
+                        payload[field] = value
                 
                 # Make the API request
                 response = send_data_to_api(payload, API_URL)
