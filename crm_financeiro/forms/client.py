@@ -30,8 +30,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
             'id': 'birth_date_initial',
             'class': 'form-control',
             'type': 'date'
-        }),
-        required=False
+        })
     )
 
     birth_date_final = forms.DateField(
@@ -40,8 +39,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
             'id': 'birth_date_final',
             'class': 'form-control',
             'type': 'date'
-        }),
-        required=False
+        })
     )
 
     client_since_initial = forms.DateField(
@@ -50,8 +48,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
             'id': 'client_since_initial',
             'class': 'form-control',
             'type': 'date'
-        }),
-        required=False
+        })
     )
 
     client_since_final = forms.DateField(
@@ -60,8 +57,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
             'id': 'client_since_final',
             'class': 'form-control',
             'type': 'date'
-        }),
-        required=False
+        })
     )
 
     is_active = forms.ChoiceField(
@@ -70,8 +66,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
         widget=forms.Select(attrs={
             'id': 'is_active',
             'class': 'form-control'
-        }),
-        required=False
+        })
     )
 
     marked_for_deletion = forms.ChoiceField(
@@ -80,8 +75,7 @@ class ClientFilterForm(EditableFieldsMixin, forms.Form):
         widget=forms.Select(attrs={
             'id': 'marked_for_deletion',
             'class': 'form-control'
-        }),
-        required=False
+        })
     )
 
     class Meta:
