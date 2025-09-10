@@ -22,7 +22,7 @@ class BlogSeleniumE2ETest(BaseClassForLiveServerTesting):
         # Simulate user visit and wait
         self.driver.get(post_url)
         self.driver.execute_script("return document.readyState") == "complete"
-        time.sleep(4)
+        time.sleep(5)
 
         # Check if the database has been updated
         self.post.refresh_from_db()

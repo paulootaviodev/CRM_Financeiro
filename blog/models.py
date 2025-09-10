@@ -1,27 +1,34 @@
 from django.db import models
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS, EDITABLE_FIELD_KWARGS
 from utils.resize_image import process_image
 from django.utils.text import slugify
 
 
 class BlogPost(models.Model):
     title = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=64,
         verbose_name="Título"
     )
     short_description = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=128,
         verbose_name="Descrição curta"
     )
     featured_image = models.ImageField(
-        **EDITABLE_FIELD_KWARGS,
         upload_to="blog_posts/",
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name="Imagem destacada"
     )
     content = models.TextField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=20000,
         verbose_name="Conteúdo"
     )
@@ -40,13 +47,17 @@ class BlogPost(models.Model):
         verbose_name="Visualizações"
     )
     created_at = models.DateTimeField(
-        **NON_EDITABLE_FIELD_KWARGS,
         auto_now_add=True,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name='Data Criado'
     )
     updated_at = models.DateTimeField(
-        **EDITABLE_FIELD_KWARGS,
         auto_now=True,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name='Data Atualizado'
     )
 
@@ -73,11 +84,15 @@ class ViewsPerMonth(models.Model):
     post = models.ForeignKey(
         BlogPost,
         on_delete=models.CASCADE,
-        verbose_name="Postagem",
-        **NON_EDITABLE_FIELD_KWARGS
+        editable=False,
+        blank=False,
+        null=False,
+        verbose_name="Postagem"
     )
     month = models.DateField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Mês"
     )
     total = models.PositiveIntegerField(

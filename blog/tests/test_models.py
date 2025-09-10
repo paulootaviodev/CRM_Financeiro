@@ -11,6 +11,27 @@ from ._base import BaseClassForTestCaseTesting
 class BlogPostModelTest(BaseClassForTestCaseTesting):
     """Tests for the BlogPost model."""
 
+    def test_object_is_created_with_valid_data(self):
+        """Test if blog post object is created when data is valid"""
+
+        post_data = {
+            'title': 'Test Title 1',
+            'short_description': 'Description 1',
+            'content': 'Content 1'
+        }
+
+        for field in ['title', 'short_description', 'content']:
+            with self.subTest(field=field):
+                self.assertEqual(
+                    self.post1.__getattribute__(field),
+                    post_data[field]
+                )
+        
+        self.assertEqual(
+            self.post1.__getattribute__('featured_image').name,
+            'blog_posts/test_2.jpg'
+        )
+
     def test_slug_is_unique(self):
         """Validates whether the generated slug is truly unique."""
 
@@ -116,6 +137,16 @@ class BlogPostModelTest(BaseClassForTestCaseTesting):
 
 class ViewsPerMonthModelTest(BaseClassForTestCaseTesting):
     """Tests for the ViewsPerMonth model."""
+
+    def test_object_is_created_with_valid_data(self):
+        """Test if views per month object is created when data is valid"""
+
+        month = date(2025, 9, 1)
+        views_object = ViewsPerMonth.objects.create(post=self.post1, month=month, total=100)
+
+        self.assertEqual(views_object.post.id, self.post1.id)
+        self.assertEqual(views_object.month, month)
+        self.assertEqual(views_object.total, 100)
 
     def test_unique_together_constraint(self):
         """Validates the unique constraint for (post, month)."""

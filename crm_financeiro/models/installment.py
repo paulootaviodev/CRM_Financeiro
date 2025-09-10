@@ -2,23 +2,28 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
 from .loan_proposal import LoanProposal
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS, EDITABLE_FIELD_KWARGS
 
 
 class Installment(models.Model):
     loan_proposal = models.ForeignKey(
         LoanProposal,
-        **NON_EDITABLE_FIELD_KWARGS,
         on_delete=models.CASCADE,
         related_name='installments',
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Proposta de empréstimo"
     )
     installment_number = models.PositiveSmallIntegerField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Número da parcela"
     )
     due_date = models.DateField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Data de vencimento"
     )
     payment_date = models.DateField(
@@ -28,7 +33,9 @@ class Installment(models.Model):
         verbose_name="Data de pagamento"
     )
     amount = models.DecimalField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_digits=14,
         decimal_places=2,
         verbose_name="Valor"
@@ -56,8 +63,10 @@ class Installment(models.Model):
         verbose_name='Data Criado'
     )
     updated_at = models.DateTimeField(
-        **EDITABLE_FIELD_KWARGS,
         auto_now=True,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name='Data Atualizado'
     )
 

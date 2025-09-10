@@ -43,7 +43,7 @@ class CreditSimulationForm(EditableFieldsMixin, forms.Form):
         required=True,
         label="",
         widget=forms.CheckboxInput(attrs={
-            'id': 'privacy-policy',
+            'id': 'privacy_policy',
             'class': 'form-check-input',
             'required': True,
             'checked': False

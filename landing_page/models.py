@@ -2,13 +2,14 @@ import hashlib
 
 from crm_financeiro.models import EncryptedPerson
 from django.db import models
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS
 from django.utils.text import slugify
 
 
 class CreditSimulationLead(EncryptedPerson):
     cpf_hash = models.CharField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_length=64,
         unique=False,
         verbose_name="Hash do CPF"
@@ -22,28 +23,38 @@ class CreditSimulationLead(EncryptedPerson):
         verbose_name="Slug"
     )
     released_value = models.DecimalField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_digits=14,
         decimal_places=2,
         verbose_name="Valor liberado"
     )
     number_of_installments = models.PositiveSmallIntegerField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Quantidade de parcelas"
     )
     value_of_installments = models.DecimalField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_digits=14,
         decimal_places=2,
         verbose_name="Valor das parcelas"
     )
     api_status = models.PositiveSmallIntegerField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Status da API"
     )
     created_at = models.DateTimeField(
-        **NON_EDITABLE_FIELD_KWARGS,
         auto_now_add=True,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name='Data Criado'
     )
 

@@ -5,7 +5,6 @@ import hashlib
 
 from django.db import models
 from cryptography.fernet import Fernet
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS, EDITABLE_FIELD_KWARGS
 from utils.field_choices import (
     STATE_CHOICES,
     EMPLOYMENT_STATUS,
@@ -20,46 +19,64 @@ AES_KEY = base64.urlsafe_b64encode(hashlib.sha256(AES_PASSWORD).digest())
 class EncryptedPerson(models.Model):
     # Encrypted fields
     _encrypted_full_name = models.BinaryField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Nome completo"
     )
     _encrypted_cpf = models.BinaryField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="CPF"
     )
     _encrypted_phone = models.BinaryField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name="Telefone"
     )
     _encrypted_email = models.BinaryField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name="E-mail"
     )
 
     # Personal data
     city = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=128,
         verbose_name="Cidade"
     )
     state = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=2,
         choices=STATE_CHOICES,
         verbose_name="Estado"
     )
     birth_date = models.DateField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name="Data de Nascimento"
     )
     marital_status = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=1,
         choices=MARITAL_STATUS,
         verbose_name="Estado Civil"
     )
     employment_status = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=1,
         choices=EMPLOYMENT_STATUS,
         verbose_name="Situação Empregatícia"
@@ -67,12 +84,16 @@ class EncryptedPerson(models.Model):
     
     # Metadata
     privacy_policy = models.BooleanField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Política de Privacidade"
     )
     updated_at = models.DateTimeField(
-        **EDITABLE_FIELD_KWARGS,
         auto_now=True,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name='Data Atualizado'
     )
 
