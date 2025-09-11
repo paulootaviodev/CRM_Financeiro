@@ -51,6 +51,11 @@ This project provides a robust foundation for developers looking to build a **Cu
    python manage.py runserver
    ```
 
+### Running Tests
+Please make sure you have Google Chrome installed on your system before running the tests. This is required for Selenium to work properly.
+
+Alternatively, you can use a different browser, but you will need to update the configuration settings in the tests to match your chosen browser.
+
 ---
 
 ## Customization Notes

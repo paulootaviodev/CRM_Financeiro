@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
 from .client import Client
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS, EDITABLE_FIELD_KWARGS
 from utils.field_choices import (
     LOAN_PROPOSAL_STATUS,
     PAYMENT_STATUS
@@ -11,35 +10,47 @@ from utils.field_choices import (
 class LoanProposal(models.Model):
     client = models.ForeignKey(
         Client,
-        **NON_EDITABLE_FIELD_KWARGS,
         on_delete=models.CASCADE,
         related_name='loan_proposals',
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Cliente"
     )
     status = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=4,
         choices=LOAN_PROPOSAL_STATUS,
         verbose_name="Status"
     )
     payment_status = models.CharField(
-        **EDITABLE_FIELD_KWARGS,
+        editable=True,
+        blank=False,
+        null=False,
         max_length=4,
         choices=PAYMENT_STATUS,
         verbose_name="Status de pagamento"
     )
     released_value = models.DecimalField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_digits=14,
         decimal_places=2,
         verbose_name="Valor liberado"
     )
     number_of_installments = models.PositiveSmallIntegerField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         verbose_name="Quantidade de parcelas"
     )
     value_of_installments = models.DecimalField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_digits=14,
         decimal_places=2,
         verbose_name="Valor das parcelas"
@@ -57,8 +68,10 @@ class LoanProposal(models.Model):
         verbose_name='Data Criado'
     )
     updated_at = models.DateTimeField(
-        **EDITABLE_FIELD_KWARGS,
         auto_now=True,
+        editable=True,
+        blank=False,
+        null=False,
         verbose_name='Data Atualizado'
     )
 

@@ -2,13 +2,14 @@ import hashlib
 
 from django.db import models
 from django.utils.text import slugify
-from utils.field_kwargs import NON_EDITABLE_FIELD_KWARGS
 from .encrypted_person import EncryptedPerson
 
 
 class Client(EncryptedPerson):
     cpf_hash = models.CharField(
-        **NON_EDITABLE_FIELD_KWARGS,
+        editable=False,
+        blank=False,
+        null=False,
         max_length=64,
         unique=True,
         verbose_name="Hash do CPF"
